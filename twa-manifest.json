@@ -1,0 +1,29 @@
+{
+  "packageId": "app.tournixo.twa",
+  "host": "tournixo.netlify.app",
+  "name": "Tournixo - Free Fire Tournament",
+  "launcherName": "Tournixo",
+  "display": "standalone",
+  "themeColor": "#080808",
+  "themeColorDark": "#080808",
+  "navigationColor": "#080808",
+  "backgroundColor": "#080808",
+  "enableNotifications": true,
+  "startUrl": "/index.html",
+  "iconUrl": "https://tournixo.netlify.app/icons/icon-512.png",
+  "maskableIconUrl": "https://tournixo.netlify.app/icons/icon-maskable-512.png",
+  "appVersion": "7.3.0",
+  "appVersionCode": 730,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "tournixo"
+  },
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://tournixo.netlify.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "orientation": "portrait"
+}

@@ -1,0 +1,254 @@
+/* ══════════════════════════════════════
+     AUTH SCREENS (shared by login.html and register.html)
+  ══════════════════════════════════════ */
+#screen-login,
+#screen-register {
+    background: radial-gradient(ellipse at 50% 0%, rgba(255, 94, 0, 0.10) 0%, transparent 60%), #000;
+}
+
+.auth-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* পুরনো ফোনে momentum scroll — আঙুল ছাড়লেও মসৃণভাবে গড়িয়ে যায় */
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    padding-bottom: 40px;
+}
+
+.auth-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.auth-header {
+    padding: calc(var(--safe-top) + 20px) 24px 28px;
+    text-align: center;
+}
+
+.auth-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 94, 0, 0.12);
+    border: 1px solid rgba(255, 94, 0, 0.22);
+    backdrop-filter: blur(13px);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 60px rgba(255, 94, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.auth-header h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.8px;
+}
+
+.auth-header p {
+    font-size: 15px;
+    color: var(--text2);
+}
+
+.auth-form {
+    padding: 0 24px;
+}
+
+.auth-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 8px;
+    margin-top: 4px;
+    display: block;
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 18px 0;
+    color: var(--text2);
+    font-size: 14px;
+}
+/* ═══════════════════════════════════════════════════════════
+   TOURNIXO SaaS login — brand lockup, card form, trust row
+   ═══════════════════════════════════════════════════════════ */
+#screen-login {
+    background: #05070d;
+    /* ⚠️ এখানে position: relative দিও না — ওটা দিলে .auth-scroll কখনোই
+       scroll হয় না, Create Account screen-এর নিচে clip হয়ে যায়
+       (2026-10-09-এর scroll bug-এর root cause ছিল এটাই)। */
+}
+
+.auth-glow {
+    position: absolute;
+    top: -140px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 460px;
+    height: 380px;
+    background: radial-gradient(ellipse, rgba(0, 200, 255, 0.14) 0%, transparent 65%);
+    pointer-events: none;
+}
+
+.auth-inner {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Brand lockup */
+.auth-brand {
+    text-align: center;
+    padding: calc(var(--safe-top) + 36px) 0 26px;
+}
+
+.auth-logo-tile {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 16px;
+    border-radius: 24px;
+    padding: 7px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 200, 255, 0.28);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), 0 0 42px rgba(0, 200, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.auth-logo-tile img {
+    width: 100%;
+    height: 100%;
+    border-radius: 17px;
+    object-fit: cover;
+    display: block;
+}
+
+.auth-wordmark {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    margin: 0;
+    background: linear-gradient(180deg, #ffffff 35%, #8fd8ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-tagline {
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(0, 200, 255, 0.65);
+}
+
+/* Sign-in card */
+.auth-card {
+    background: var(--bg3, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    padding: 26px 22px 22px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.auth-card h2 {
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    margin: 0 0 6px;
+    text-align: left;
+}
+
+.auth-card-sub {
+    font-size: 13.5px;
+    color: var(--text2);
+    margin: 0 0 20px;
+    text-align: left;
+}
+
+.auth-card .auth-label {
+    margin-top: 14px;
+}
+
+.auth-card .auth-label:first-of-type {
+    margin-top: 0;
+}
+
+.auth-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0 18px;
+}
+
+.link-btn {
+    background: none;
+    border: none;
+    padding: 8px 2px;
+    min-height: 36px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent, #00c8ff);
+    cursor: pointer;
+}
+
+.btn-block {
+    width: 100%;
+    min-height: 52px;
+    font-size: 16px;
+    border-radius: 16px;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border, rgba(255, 255, 255, 0.08));
+}
+
+/* Trust badges */
+.auth-trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 26px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+}
+
+.auth-trust .dot {
+    opacity: 0.4;
+}
+
+/* Register page: show the Tournixo logo inside the existing tile */
+.auth-logo img {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+    display: block;
+}

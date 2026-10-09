@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Home - Tournixo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/toast.css">
+    <link rel="stylesheet" href="../styles/components/confirm-dialog.css">
+    <link rel="stylesheet" href="../styles/components/bottom-nav.css">
+    <link rel="stylesheet" href="../styles/components/skeleton-loader.css">
+    <link rel="stylesheet" href="../styles/components/banner-slider.css">
+    <link rel="stylesheet" href="../styles/components/mode-chips.css">
+    <link rel="stylesheet" href="../styles/pages/home.css">
+    <link rel="stylesheet" href="../styles/pages/tournaments.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#080808">
+<!-- modulepreload: warm the shared module graph during HTML parse -->
+    <link rel="modulepreload" href="../scripts/app.js">
+    <link rel="modulepreload" href="../scripts/state.js">
+    <link rel="modulepreload" href="../scripts/cache.js">
+    <link rel="modulepreload" href="../firebase/firebase-init.js">
+
+</head>
+
+<body data-page="home">
+    <div id="app">
+        <div id="screen-main" class="screen active">
+
+<!-- HOME TAB -->
+<div class="home-header">
+    <div style="display:flex;align-items:center;gap:11px;">
+        <div class="home-avatar" id="home-avatar"></div>
+        <div>
+            <div class="greeting-text" id="home-greeting"> Hey there </div>
+            <div class="greeting-sub">Tournixo Arena</div>
+        </div>
+    </div>
+    <div class="home-header-actions">
+        <div class="wallet-preview">
+            <span style="color:#C7FF3E;font-weight:800;">₹</span>
+            <span id="home-balance">0</span>
+        </div>
+        <button class="icon-btn" onclick="navToNotifications()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="tab-badge" id="notif-badge" style="display:none;"></span>
+        </button>
+    </div>
+</div>
+
+<div class="scroll-area">
+
+    <!-- Banner Slider mounts here -->
+    <div id="mount-banner-slider"></div>
+
+    <!-- Mode Chips mount here -->
+    <div id="mount-mode-chips"></div>
+
+    <!-- My Stats -->
+    <div class="section-header">
+        <h2 class="section-title">My Stats</h2>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="stat-joined">0</div>
+            <div class="stat-label">Joined</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="stat-wins">0</div>
+            <div class="stat-label">Wins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="stat-earnings">₹0</div>
+            <div class="stat-label">Earned</div>
+        </div>
+    </div>
+
+    <!-- Upcoming Tournaments -->
+    <div class="section-header">
+        <h2 class="section-title">Upcoming Tournaments</h2>
+        <span class="section-link" onclick="goToTournaments()">See All</span>
+    </div>
+    <div id="home-tournaments"></div>
+
+</div>
+
+
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/home.js"></script>
+</body>
+
+</html>

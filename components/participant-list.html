@@ -1,0 +1,13 @@
+<!-- Participants Section with Search -->
+<div style="margin: 22px 0;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+        <div style="font-size: 16px; font-weight: 800;">👥 Participants (<span id="participants-count">0</span>)</div>
+    </div>
+    <div class="input-group" style="height: 42px; margin-bottom: 12px; border-radius: 10px;">
+        <span class="input-icon">🔍</span>
+        <input type="text" placeholder="Search player, team, UID..." oninput="onParticipantSearch(this.value)">
+    </div>
+    <div id="detail-participants-list" style="display:flex; flex-direction:column; gap:8px;">
+        <!-- Dynamic Participant Cards render here -->
+    </div>
+</div>

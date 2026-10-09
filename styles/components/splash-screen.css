@@ -1,0 +1,160 @@
+/* ══════════════════════════════════════
+     TOURNIXO SPLASH SCREEN — premium brand reveal
+  ══════════════════════════════════════ */
+#screen-splash.splash {
+    background: #05070d;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* Ambient brand glows */
+.splash-glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(10px);
+}
+.splash-glow-a {
+    width: 420px;
+    height: 420px;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(0, 200, 255, 0.16) 0%, transparent 65%);
+    animation: splashBreathe 4s ease-in-out infinite alternate;
+}
+.splash-glow-b {
+    width: 520px;
+    height: 520px;
+    bottom: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 65%);
+    animation: splashBreathe 5.5s ease-in-out infinite alternate-reverse;
+}
+
+/* Faint perspective grid floor */
+.splash-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image:
+        linear-gradient(rgba(0, 200, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 200, 255, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 75% 60% at 50% 45%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 45%, black 20%, transparent 75%);
+}
+
+/* Center lockup */
+.splash-center {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(-24px);
+    animation: splashRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.splash-logo-ring {
+    width: 124px;
+    height: 124px;
+    border-radius: 34px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 200, 255, 0.25);
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.55),
+        0 0 55px rgba(0, 200, 255, 0.22),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    animation: splashFloat 3.2s ease-in-out infinite;
+}
+
+.splash-logo {
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    object-fit: cover;
+    display: block;
+}
+
+.splash-title {
+    margin: 26px 0 0;
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #ffffff;
+    background: linear-gradient(180deg, #ffffff 30%, #9fdcff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.splash-tag {
+    margin: 12px 0 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(0, 200, 255, 0.75);
+}
+
+/* Bottom loader */
+.splash-loader {
+    position: absolute;
+    bottom: 72px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    z-index: 2;
+}
+
+.splash-spinner {
+    width: 26px;
+    height: 26px;
+    border: 3px solid rgba(255, 255, 255, 0.08);
+    border-top-color: #00c8ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.splash-loader-text {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.38);
+    animation: pulseOpacity 1.6s ease-in-out infinite;
+}
+
+@keyframes splashBreathe {
+    from { opacity: 0.65; transform: translateX(-50%) scale(1); }
+    to   { opacity: 1;    transform: translateX(-50%) scale(1.08); }
+}
+
+@keyframes splashFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-9px); }
+}
+
+@keyframes splashRise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(-24px); }
+}
+
+@keyframes pulseOpacity {
+    0%, 100% { opacity: 0.45; }
+    50%      { opacity: 1; }
+}

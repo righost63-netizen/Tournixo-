@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>My Wallet - Tournixo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/toast.css">
+    <link rel="stylesheet" href="../styles/components/confirm-dialog.css">
+    <link rel="stylesheet" href="../styles/components/bottom-nav.css">
+    <link rel="stylesheet" href="../styles/components/skeleton-loader.css">
+    <link rel="stylesheet" href="../styles/pages/wallet.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#080808">
+<!-- modulepreload: warm the shared module graph during HTML parse -->
+    <link rel="modulepreload" href="../scripts/app.js">
+    <link rel="modulepreload" href="../scripts/state.js">
+    <link rel="modulepreload" href="../scripts/cache.js">
+    <link rel="modulepreload" href="../firebase/firebase-init.js">
+
+</head>
+
+<body data-page="wallet">
+    <div id="app">
+        <div id="screen-main" class="screen active">
+
+            <!-- WALLET TAB -->
+            <div id="tab-wallet" class="tab-panel active-tab" style="flex:1;flex-direction:column;overflow:hidden;">
+                <div class="top-nav">
+                    <h1>My Wallet</h1>
+                </div>
+                <div class="scroll-area">
+                    <div class="balance-card">
+                        <div class="b-label">Winning Balance</div>
+                        <div class="b-amount"><span>₹</span><span id="wallet-balance-amt">0.00</span></div>
+                        <div class="b-btns">
+                            <button class="b-btn primary" onclick="openWithdraw()">💸 Withdraw</button>
+                            <button class="b-btn ghost" onclick="openPage('leaderboard')">🏆 Leaderboard</button>
+                        </div>
+                    </div>
+                    <div class="tabs">
+                        <div class="tab active" onclick="setTxTab('prize',this)">Prize History</div>
+                        <div class="tab" onclick="setTxTab('withdraw',this)">Withdrawals</div>
+                    </div>
+                    <div id="tx-prize-list"></div>
+                    <div id="tx-withdraw-list" style="display:none;"></div>
+                    <div style="height:16px;"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/wallet.js"></script>
+</body>
+
+</html>

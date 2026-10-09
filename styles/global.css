@@ -1,0 +1,712 @@
+/* ══════════════════════════════════════
+     RESET & BASE
+  ══════════════════════════════════════ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+}
+
+/* Multi-page: page stays hidden until Firebase auth state is known (see scripts/app.js) */
+html.auth-pending body {
+    visibility: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 430px;
+    height: 100vh;
+    /* পুরনো browser fallback */
+    height: 100dvh;
+    /* dynamic toolbar অনুযায়ী — নিচের nav কাটা যাওয়া ঠেকায় */
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+/* ══════════════════════════════════════
+     SCREENS
+  ══════════════════════════════════════ */
+.screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.screen.slide-in {
+    animation: slideIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.screen.slide-out {
+    animation: slideOut 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-30%);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.92);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ✅ FIX 8 (PERFORMANCE/BATTERY): When the tab/app is hidden (visibilitychange JS adds
+   this class), pause every looping CSS animation. This stops GPU/CPU work completely
+   in the background instead of just being throttled by the browser — important for
+   low-end MediaTek/old Snapdragon devices. No visual change while the app is visible. */
+body.app-paused * {
+    animation-play-state: paused !important;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes sheetUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes badgePop {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ══════════════════════════════════════
+     SCROLL AREA & BOTTOM TAB BAR FIX
+  ══════════════════════════════════════ */
+.scroll-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    padding-bottom: 90px;
+    /* নিচের ট্যাব বারের জন্য জায়গা রাখা হলো */
+}
+
+.scroll-area::-webkit-scrollbar {
+    display: none;
+}
+
+/* ══════════════════════════════════════
+     TAB PANEL BULLETPROOF FIX
+     (each page's main content wrapper: <div class="tab-panel active-tab">)
+  ══════════════════════════════════════ */
+.tab-panel {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg) !important;
+    /* পেছনের লেখা পুরোপুরি ঢেকে দেবে */
+    display: none !important;
+    /* ডিফল্টভাবে সব হাইড থাকবে */
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.tab-panel.active-tab {
+    display: flex !important;
+    /* শুধুমাত্র অ্যাকটিভ ট্যাবটি শো করবে */
+    z-index: 10;
+}
+
+/* ──────────────────────────────────────────
+   PREMIUM GLASS + iOS NATIVE REFINEMENTS
+   (the tab-bar / toast / tournament-card / wallet-card parts of the original
+    group rule live in their own component/page files, in the same order)
+   ────────────────────────────────────────── */
+.bottom-sheet {
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 28px 28px 0 0;
+    border-top: 0.5px solid rgba(255, 255, 255, 0.07);
+    padding: 0;
+    width: 100%;
+    max-height: 92dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    transition: all 0.2s ease;
+    animation: sheetUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.btn-primary {
+    background: var(--accent-grad);
+    color: #fff;
+    box-shadow: var(--shadow-accent);
+    border-radius: 18px;
+    font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.btn-primary:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 16px rgba(0, 200, 255, 0.3);
+}
+
+/* প্রাইজ পট ও গোল্ড কালার */
+.gold,
+.info-val.gold,
+.prize-pool {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}
+
+/* ══════════════════════════════════════
+     TOP NAV
+  ══════════════════════════════════════ */
+
+/* iOS স্টাইলের জন্য প্যাডিং ঠিক করা */
+.top-nav,
+.home-header,
+.modal-header {
+    padding-top: calc(var(--safe-top) + 12px);
+}
+
+.top-nav {
+    padding: calc(var(--safe-top) + 8px) 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--bg2);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    border-bottom: 0.5px solid var(--border);
+}
+
+.top-nav h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 18px;
+    transition: transform 0.15s ease, background 0.15s;
+    position: relative;
+}
+
+.icon-btn:active {
+    transform: scale(0.88);
+}
+
+/* Header Actions Fix */
+.home-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* SVG Icons Styling */
+.tab-icon svg,
+.icon-btn svg,
+.wallet-preview svg {
+    display: block;
+    transition: all 0.2s ease;
+}
+
+/* ══════════════════════════════════════
+     CARDS
+  ══════════════════════════════════════ */
+.card {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 0 16px 12px;
+}
+
+.card-inset {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+/* ══════════════════════════════════════
+     INPUTS
+  ══════════════════════════════════════ */
+.input-group {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    height: 54px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group:focus-within {
+    border-color: rgba(255, 94, 0, 0.6);
+    box-shadow: 0 0 0 3px rgba(255, 94, 0, 0.12);
+}
+
+.input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 16px;
+    font-family: inherit;
+    min-width: 0;
+}
+
+.input-group input::placeholder {
+    color: var(--text3);
+}
+
+.input-group .input-icon {
+    color: var(--text2);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.input-toggle {
+    background: none;
+    border: none;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    min-width: 44px;      /* comfortable touch target */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+     BUTTONS
+  ══════════════════════════════════════ */
+.btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 56px;
+    letter-spacing: -0.2px;
+}
+
+.btn:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: var(--text);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    font-size: 15px;
+}
+
+.btn-danger {
+    background: var(--error-dim);
+    color: var(--error);
+    border: 0.5px solid rgba(255, 59, 48, 0.25);
+}
+
+.btn-success {
+    background: var(--success-dim);
+    color: var(--success);
+    border: 0.5px solid rgba(0, 200, 83, 0.3);
+}
+
+.btn-sm {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--radius-xs);
+    width: auto;
+    min-height: 44px;
+}
+
+/* ══════════════════════════════════════
+     MODAL / BOTTOM SHEET
+  ══════════════════════════════════════ */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 500;
+    display: none;
+    align-items: flex-end;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+.bottom-sheet::-webkit-scrollbar {
+    display: none;
+}
+
+.sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 2px;
+    margin: 14px auto 0;
+}
+
+.sheet-content {
+    padding: 0 20px calc(var(--safe-bottom) + 80px);
+}
+
+/* ══════════════════════════════════════
+     FULL MODAL
+  ══════════════════════════════════════ */
+.full-modal {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 600;
+    display: none;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.38s cubic-bezier(0.15, 0.85, 0.35, 1);
+    will-change: transform;
+}
+
+.full-modal.active {
+    display: flex;
+    transform: translateX(0);
+    animation: slideIn 0.38s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: calc(var(--safe-top) + 8px) 20px 12px;
+    border-bottom: 0.5px solid var(--border2);
+    flex-shrink: 0;
+    background: var(--bg2);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modal-header h2 {
+    font-size: 18px;
+    font-weight: 800;
+    flex: 1;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+}
+
+/* ══════════════════════════════════════
+     EMPTY STATE
+  ══════════════════════════════════════ */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 32px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 52px;
+    opacity: 0.5;
+}
+
+.empty-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.empty-sub {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+     LOADING
+  ══════════════════════════════════════ */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2.5px solid rgba(255, 255, 255, 0.12);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    backdrop-filter: blur(4px);
+}
+
+/* Sheet Title */
+.sheet-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    margin-bottom: 4px;
+}
+
+.sheet-subtitle {
+    color: var(--text2);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* ══════════════════════════════════════
+     MISC
+  ══════════════════════════════════════ */
+.divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 8px 0;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.text-sm {
+    font-size: 13px;
+    color: var(--text2);
+}
+
+.text-accent {
+    color: var(--accent);
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.mb-4 {
+    margin-bottom: 4px;
+}
+
+.mb-8 {
+    margin-bottom: 8px;
+}
+
+.mb-16 {
+    margin-bottom: 16px;
+}
+
+.mt-8 {
+    margin-top: 8px;
+}
+
+.mt-12 {
+    margin-top: 12px;
+}
+
+.px-20 {
+    padding: 0 20px;
+}
+
+.p-16 {
+    padding: 16px;
+}
+
+/* shared form label (login/register, join form, payment) */
+.auth-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 8px;
+    margin-top: 4px;
+    display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

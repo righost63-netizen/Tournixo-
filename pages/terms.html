@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Terms & Conditions - Tournixo</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/toast.css">
+    <link rel="stylesheet" href="../styles/components/confirm-dialog.css">
+    <link rel="stylesheet" href="../styles/pages/terms.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <!-- modulepreload: warm the shared module graph during HTML parse -->
+    <link rel="modulepreload" href="../scripts/app.js">
+    <link rel="modulepreload" href="../scripts/state.js">
+    <link rel="modulepreload" href="../scripts/cache.js">
+    <link rel="modulepreload" href="../firebase/firebase-init.js">
+</head>
+
+<body data-page="terms">
+    <div id="app">
+        <div id="screen-main" class="screen active">
+
+            <!-- Terms & Conditions — premium full page -->
+            <div class="page terms-page" id="page-terms">
+
+                <!-- Hero header -->
+                <header class="terms-hero">
+                    <button
+                        type="button"
+                        class="back-btn terms-hero-back"
+                        onclick="closeTerms()"
+                        aria-label="Go back">‹ Back</button>
+                    <div class="terms-hero-icon">📜</div>
+                    <h1 class="terms-hero-title">Terms &amp; Conditions</h1>
+                    <p class="terms-hero-sub">The rules of fair play on Tournixo</p>
+                    <div id="terms-updated-chip" class="terms-updated-chip" style="display:none;"></div>
+                </header>
+
+                <!-- Content -->
+                <main class="terms-content-area">
+                    <article id="terms-content" class="terms-content">
+                        <div class="terms-empty-state">
+                            <div class="spinner"></div>
+                        </div>
+                    </article>
+                    <footer class="terms-footer">
+                        <div class="terms-footer-brand">TOURNIXO</div>
+                        <div class="terms-footer-note">Play fair · Win real</div>
+                    </footer>
+                </main>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/terms.js"></script>
+</body>
+
+</html>

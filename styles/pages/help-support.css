@@ -1,0 +1,115 @@
+/* styles/pages/help-support.css */
+
+.help-support-page {
+    min-height: 100%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.help-header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.help-back-btn {
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: 30px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.help-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.help-header-spacer {
+    width: 40px;
+}
+
+.help-content-area {
+    padding: 20px 16px 32px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.help-description {
+    margin: 0 0 20px;
+    color: var(--text2);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.help-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.help-buttons button {
+    width: 100%;
+    min-height: 52px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg2);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Dynamic contact buttons (rendered from supportContacts collection) */
+.help-contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 60px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg3);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, border-color 0.2s ease;
+}
+
+.help-contact-btn:active {
+    transform: scale(0.98);
+    border-color: var(--accent);
+}
+
+.help-contact-ic {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border-radius: 13px;
+    background: rgba(0, 200, 255, 0.1);
+    border: 1px solid rgba(0, 200, 255, 0.22);
+}
+
+.help-contact-chev {
+    margin-left: auto;
+    color: var(--text3);
+    font-size: 20px;
+    font-weight: 700;
+}

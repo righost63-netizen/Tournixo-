@@ -1,0 +1,159 @@
+/* ══════════════════════════════════════
+   RESULTS PAGE — full-page scoreboard
+   ══════════════════════════════════════ */
+
+body[data-page="results"] .top-nav {
+    background: var(--bg);
+    border-bottom: none;
+    padding: calc(var(--safe-top) + 8px) 20px 4px;
+}
+
+body[data-page="results"] .top-nav h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.3px;
+}
+
+.results-scroll {
+    padding: 8px 18px 90px;
+}
+
+/* Tournament selector cards (results list) */
+.results-pick-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text2);
+    margin: 6px 2px 12px;
+}
+
+.results-tourn-card {
+    background: var(--bg3);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.results-tourn-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.results-tourn-meta {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 3px;
+}
+
+/* Scoreboard header */
+.results-board-head {
+    margin: 4px 2px 14px;
+}
+
+.results-board-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.results-board-meta {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 3px;
+}
+
+.results-team-note {
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+/* Scoreboard rows */
+.results-row {
+    background: var(--bg3);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+}
+
+.results-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.results-rank {
+    font-size: 22px;
+    width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.results-player {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.results-player-sub {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 4px;
+    line-height: 1.45;
+}
+
+.results-prize {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.results-prize-amt {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gold);
+}
+
+.results-prize-kills {
+    font-size: 11px;
+    color: var(--success);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.results-row-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+}
+
+/* v6: own-team highlight on the scoreboard */
+.results-row.me {
+    border: 1px solid rgba(255, 215, 0, 0.55);
+    box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.25), 0 4px 18px rgba(255, 215, 0, 0.08);
+}
+.you-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #0a0a0a;
+    background: linear-gradient(135deg, #ffd700, #ffb700);
+    border-radius: 6px;
+    padding: 2px 7px;
+    margin-left: 6px;
+    vertical-align: 2px;
+}

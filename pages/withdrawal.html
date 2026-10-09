@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Withdraw - Tournixo</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/toast.css">
+    <link rel="stylesheet" href="../styles/components/confirm-dialog.css">
+    <link rel="stylesheet" href="../styles/pages/payment.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <!-- modulepreload: warm the shared module graph during HTML parse -->
+    <link rel="modulepreload" href="../scripts/app.js">
+    <link rel="modulepreload" href="../scripts/state.js">
+    <link rel="modulepreload" href="../scripts/cache.js">
+    <link rel="modulepreload" href="../firebase/firebase-init.js">
+</head>
+
+<body data-page="withdrawal">
+    <div id="app">
+        <div id="screen-main" class="screen active">
+
+            <!-- WITHDRAW BOTTOM SHEET — Premium iOS Style -->
+            <div id="overlay-withdraw" class="overlay active" onclick="if(event.target.id==='overlay-withdraw') closeWithdrawSheet()">
+                <div class="bottom-sheet">
+                    <div class="sheet-handle"></div>
+                    <div class="sheet-content">
+                        <h3 class="sheet-title">Withdraw Funds</h3>
+                        <p class="sheet-subtitle" id="wd-min-text">Minimum withdrawal: ₹100</p>
+
+                        <div class="card-inset">
+
+                            <div class="card-inset">
+                                <div class="row">
+                                    <span class="text-sm">Available Balance</span>
+                                    <span id="withdraw-available" class="withdraw-available">₹0</span>
+                                </div>
+                            </div>
+
+                            <label class="auth-label">Amount (₹)</label>
+                            <div class="input-group">
+                                <span class="input-icon">💵</span>
+                                <input id="wd-amount" type="number" placeholder="Min ₹100" inputmode="decimal">
+                            </div>
+
+                            <div class="payment-method-row">
+                                <button class="pay-method-chip active" onclick="selectWdMethod('upi',this)">UPI</button>
+                            </div>
+
+                            <label class="auth-label">UPI ID</label>
+                            <div class="input-group">
+                                <span class="input-icon">📱</span>
+                                <input id="wd-phone" type="text" placeholder="yourname@upi">
+                            </div>
+
+                            <button class="btn btn-primary" onclick="submitWithdraw()">Request Withdrawal</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/withdrawal.js"></script>
+</body>
+
+</html>

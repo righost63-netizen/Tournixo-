@@ -1,0 +1,354 @@
+/* glass refinement (tournament-card part of the original group rule) — merged */
+.tournament-card {
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin: 0 18px 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    animation: fadeInUp 0.3s ease both;
+    transition: transform 0.15s ease;
+}
+
+.tournament-card:active {
+    transform: scale(0.985);
+}
+
+.filter-tab.active {
+    background: var(--bg5);
+    color: var(--text);
+}
+
+/* ══════════════════════════════════════
+     TOURNAMENT CARDS
+  ══════════════════════════════════════ */
+.filter-tabs {
+    display: flex;
+    gap: 0;
+    margin: 0 16px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+}
+
+.filter-tab {
+    flex: 1;
+    padding: 8px;
+    border-radius: var(--radius-xs);
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+}
+
+.tournament-banner-wrap {
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #20242B, #121417);
+}
+
+.tournament-banner {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    background: var(--bg5);
+    display: block;
+}
+
+.tournament-banner-placeholder {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(180deg, #20242B, #121417);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.tournament-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+.tournament-banner-title {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    right: 70px;
+}
+
+.tournament-status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.tournament-body {
+    padding: 16px;
+}
+
+.tournament-title {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 9px;
+    color: var(--text);
+}
+
+.tournament-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.badge-mode {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text2);
+}
+
+.badge-map {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text2);
+}
+
+.badge-upcoming {
+    background: rgba(199, 255, 62, 0.06);
+    border-color: rgba(199, 255, 62, 0.25);
+    color: #C7FF3E;
+}
+
+.badge-ongoing {
+    background: var(--success-dim);
+    border-color: rgba(0, 200, 83, 0.25);
+    color: var(--success);
+}
+
+.badge-completed {
+    background: rgba(142, 142, 147, 0.10);
+    border-color: rgba(142, 142, 147, 0.20);
+    color: var(--text2);
+}
+.badge-cancelled {
+    background: var(--error-dim);
+    border-color: rgba(255, 69, 58, 0.25);
+    color: var(--error);
+}
+
+.badge-free {
+    background: #C7FF3E;
+    border-color: #C7FF3E;
+    color: #0A0B0D;
+}
+
+.badge-paid {
+    background: rgba(199, 255, 62, 0.10);
+    border-color: rgba(199, 255, 62, 0.3);
+    color: #C7FF3E;
+}
+
+.tournament-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 12px;
+    margin-bottom: 16px;
+}
+
+
+.info-label {
+    font-size: 10.5px;
+    color: var(--text2);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-bottom: 3px;
+}
+
+.info-val {
+    font-size: 14px;
+    font-weight: 800;
+    margin-top: 0;
+}
+
+.info-val.gold,
+.info-val.green {
+    color: #3FD9A4;
+}
+
+.slots-bar {
+    background: var(--bg3);
+    border-radius: 10px;
+    height: 4px;
+    margin-bottom: 7px;
+    overflow: hidden;
+}
+
+.slots-fill {
+    height: 100%;
+    background: #3FD9A4;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+.slots-fill.slots-hot {
+    background: #8FB82C;
+}
+
+.slots-text {
+    font-size: 11px;
+    color: var(--text2);
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.card-actions .btn {
+    flex: 1;
+    padding: 13px 0;
+    border-radius: 13px;
+    font-size: 13.5px;
+    font-weight: 800;
+    min-height: unset;
+    height: auto;
+    border: 1px solid var(--border);
+    text-align: center;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-view-detail {
+    background: rgba(255, 255, 255, 0.07);
+    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    color: var(--text);
+    height: 40px;
+    min-height: 40px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 14px;
+}
+
+/* Premium Join button — clean lime gradient, soft shadow (no harsh glow) */
+.card-actions .btn-join-card {
+    flex: 1;
+}
+.btn-join-card {
+    background: linear-gradient(135deg, #D8FF55, #B9E62E);
+    color: #0A0B0D;
+    border: 1px solid rgba(199, 255, 62, 0.55);
+    height: auto;
+    min-height: unset;
+    border-radius: 13px;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 13px 0;
+    text-align: center;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(199, 255, 62, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.btn-join-card:active {
+    transform: scale(0.97);
+    box-shadow: 0 3px 10px rgba(199, 255, 62, 0.12);
+}
+
+.btn-joined-card {
+    background: var(--success-dim);
+    border: 0.5px solid rgba(0, 200, 83, 0.3);
+    color: var(--success);
+    height: 40px;
+    min-height: 40px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 0 14px;
+}
+
+/* ── Countdown Timer Style ── */
+.countdown-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 5px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
+    z-index: 5;
+}
+
+.timer-dot {
+    width: 6px;
+    height: 6px;
+    background: #ff3b30;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+.timer-text {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* ── Premium LIVE badge (CSS pulsing dot — no emoji, renders identically everywhere) ── */
+.live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #fff;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 1.2s infinite;
+    box-shadow: 0 0 10px rgba(255, 255, 255, .9);
+}

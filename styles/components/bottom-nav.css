@@ -1,0 +1,98 @@
+/* ══════════════════════════════════════
+     BOTTOM TAB BAR
+  ══════════════════════════════════════ */
+.tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(var(--bg2-rgb), 0.92);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border-top: 0.5px solid var(--border2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding-top: 10px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 34px));
+    transition: all 0.2s ease;
+}
+
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+    cursor: pointer;
+    min-height: 44px;
+    transition: transform 0.12s ease;
+    position: relative;
+}
+
+.tab-item:active {
+    transform: scale(0.86);
+}
+
+.tab-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    font-size: 20px;
+    opacity: 0.55;
+}
+
+.tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text2);
+    transition: color 0.2s, font-weight 0.2s;
+}
+
+.tab-item.active .tab-label {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.tab-item.active .tab-icon {
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+.tab-item.active::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.tab-badge {
+    position: absolute;
+    top: -2px;
+    right: 10px;
+    background: var(--error);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg);
+    animation: badgePop 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tab-item.active .tab-icon svg {
+    stroke: var(--accent);
+    transform: scale(1.05);
+}

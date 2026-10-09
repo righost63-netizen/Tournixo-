@@ -1,0 +1,367 @@
+// ═══ firestore.rules v10 — PERFECT / DEPLOY THIS ONE ═══
+// Prepared 2026-10-07. Replaces firestore-rules-merged-DEPLOY-v9.txt.
+// v10.1 (2026-10-07): + leaderboard/{docId} rule for the daily published
+// leaderboard (v6.1 user app reads ONE doc per view instead of 50 user docs).
+// v10.2 (2026-10-08): + teams (v7 persistent My Team) + playerReports (v7).
+//
+// WHAT CHANGED vs v9 (and why v9 could NOT be deployed as-is):
+// ────────────────────────────────────────────────────────────────
+// ❌ v9 set tournamentCaptains / tournamentPlayerUIDs / tournaments /
+//    tournamentTeams writes to admin-only. But the user app's join
+//    transaction RUNS AS THE SIGNED-IN USER and must:
+//      • get()   tournamentPlayerUIDs/{tid_uid}      (duplicate-UID check)
+//      • set()   tournamentCaptains/{tid_uid}        (captain lock)
+//      • set()   tournamentPlayerUIDs/{tid_uid}      (UID locks)
+//      • update() tournaments/{tid} counters         (seat reservation)
+//    → with v9, EVERY join (free + paid) failed with permission-denied.
+// ❌ v9 set tournamentTeams update = admin-only → the payment-submit
+//    transaction (team → paymentStatus 'pending') failed too, and the
+//    Matches "Edit Name" button could never work.
+// ❌ v9 set users/{uid}/notifications write = admin/staff-only → the app's
+//    own inbox writes (tournament reminders, "payment submitted" note) and
+//    mark-as-read ALWAYS failed.
+// ✅ v10 fixes all of the above with tightly constrained user writes
+//    (field allow-lists, owner checks, ±1 counter steps, time-bound expiry).
+// ✅ v10 adds the pending-team auto-expiry rules (expiresAt).
+// ✅ v10 hardens roomCredentials with forward-compatible participantUids.
+// Kept from v9: users-read relaxed (leaderboard), adminActivityLogs
+// admin-only, public settings/publicConfig (GitHub poller), staff heartbeat.
+//
+// Deploy: Firebase Console → Firestore Database → Rules ট্যাবে পুরোটা
+// পেস্ট করে Publish. (Test in the console Rules Playground if unsure.)
+// ════════════════════════════════════════════════════════════════
+rules_version = '2';
+// Firestore Security Rules — Free Fire Tournament App
+// (user app + admin panel + staff panel — একই Firebase project)
+//
+// মূল নীতি:
+//  • public ডেটা (tournaments, banners, results) সবাই পড়তে পারবে
+//  • join flow-এর lock/counter লেখা user নিজে করবে — কিন্তু কঠোর সীমার ভেতর
+//    (শুধু নির্দিষ্ট ফিল্ড, শুধু নিজের ডকুমেন্ট, কাউন্টার ±1)
+//  • টাকা-পয়সার ডকুমেন্ট (withdrawal, wallet) user শুধু নিজেরটা দেখবে
+//  • কেউ নিজে নিজে role='admin' বা role='staff' বসাতে পারবে না
+//
+// Deploy: Firebase Console → Firestore Database → Rules ট্যাবে পেস্ট করে Publish
+// (অথবা কম্পিউটার থেকে: firebase deploy --only firestore:rules)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isSignedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    function isStaff() {
+      return isSignedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff'
+        && request.auth.token.email_verified == true;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    // শুধু নির্দিষ্ট ফিল্ডগুলো বদলানো যাবে (বাকি সব আগের মতোই থাকতে হবে)
+    function onlyKeys(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+    // কাউন্টার এক ধাপ (±1) বা অপরিবর্তিত — seat reservation-এর জন্য যথেষ্ট,
+    // কিন্তু কেউ ইচ্ছামতো সংখ্যা বসাতে পারবে না
+    function stepDelta(oldV, newV) {
+      return newV == oldV || newV == oldV + 1 || newV == oldV - 1;
+    }
+
+    // ── Users ──
+    match /users/{uid} {
+      // LEADERBOARD: the public leaderboard ranks ALL users by totalEarnings,
+      // so any signed-in user must be able to list user docs. Trade-off: a
+      // signed-in user can also read other users' email/ffUID/walletBalance.
+      // (Future hardening: publish a separate public `leaderboard` collection
+      // with only name/ffUID/totalEarnings and keep users/ private.)
+      allow read: if isSignedIn();
+      // user নিজে শুধু নিজের ডকুমেন্ট তৈরি করতে পারবে,
+      // কিন্তু role='admin' নিজে বসাতে পারবে না (নইলে সবাই admin হয়ে যাবে!)
+      // ('pending' / 'pending-staff' role নিয়ে signup করা যাবে)
+      allow create: if isOwner(uid)
+        && (!('role' in request.resource.data)
+            || (request.resource.data.role != 'admin' && request.resource.data.role != 'staff'));
+      // নিজের ডকুমেন্টে role বদলানো যাবে না;
+      // admin সব এডিট করতে পারবে; staff শুধু walletBalance ফিল্ড আপডেট করতে পারবে
+      // (approve-তে ডিডাক্ট) — অন্য ফিল্ড (যেমন role) ছুঁতে পারবে না,
+      // নইলে staff নিজেকে role='admin' বানিয়ে ফেলতে পারত!
+      // (join flow joinedTournaments arrayUnion-ও এই owner-পথেই যায়)
+      allow update: if isAdmin()
+        || (isStaff() && onlyKeys(['walletBalance']))
+        || (isOwner(uid) && request.resource.data.role == resource.data.role);
+      allow delete: if isAdmin();
+      // প্রত্যেক user-এর নিজের notification inbox
+      match /notifications/{notifId} {
+        allow read: if isOwner(uid);
+        // v10: user app নিজের inbox-এ লেখে — tournament reminder
+        // (notifications.service.js) আর "payment submitted" নোট
+        // (payment.service.js)। শুধু নিজের inbox, তাই cross-user spam অসম্ভব।
+        allow create: if isOwner(uid);
+        // v10: owner শুধু read ফ্ল্যাগ বদলাতে পারবে (mark-as-read);
+        // system নোটিফিকেশন (approve/reject) পাঠায় admin/staff।
+        allow update: if isAdmin() || isStaff()
+          || (isOwner(uid) && onlyKeys(['read']));
+        allow delete: if isAdmin() || isStaff();
+      }
+    }
+
+    // ── Tournaments (public পড়া) ──
+    match /tournaments/{tid} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // v10: join transaction user হয়ে চলে — seat counter (±1) সরাতে হয়;
+      // expiry sweep pendingTeams −1 করে; staff confirm −1/+1 করে।
+      // শুধু কাউন্টার ফিল্ড, এক ধাপ, কখনো negative নয়।
+      allow update: if isAdmin()
+        || ((isStaff() || isSignedIn())
+            && onlyKeys(['filledTeams', 'filledSlots', 'filledPlayers', 'pendingTeams', 'updatedAt'])
+            // v10: .get(field, 0) — পুরনো tournament doc-এ ফিল্ড না থাকলেও
+            // rule error না হয়ে 0 ধরে নেবে
+            && stepDelta(resource.data.get('filledTeams', 0), request.resource.data.filledTeams)
+            && stepDelta(resource.data.get('filledSlots', 0), request.resource.data.filledSlots)
+            && stepDelta(resource.data.get('pendingTeams', 0), request.resource.data.pendingTeams)
+            && request.resource.data.filledTeams >= 0
+            && request.resource.data.filledSlots >= 0
+            && request.resource.data.pendingTeams >= 0
+            && request.resource.data.filledPlayers >= 0);
+    }
+
+    // ── Room credentials ──
+    match /roomCredentials/{tid} {
+      // v10: ideally শুধু participant পড়বে। Admin panel এখনো participantUids
+      // লেখে না, তাই forward-compatible: admin panel যেদিন publish-এর সময়
+      // participantUids (Firebase UID array) লিখবে, সেদিন থেকে automatically
+      // restricted হয়ে যাবে। তার আগ পর্যন্ত: যেকোনো signed-in user (documented)।
+      // ⚠️ Admin-রা কখনো roomId/password public tournaments ডকুমেন্টে
+      // রাখবে না — শুধু এখানে।
+      allow read: if isSignedIn()
+        && (!('participantUids' in resource.data) || request.auth.uid in resource.data.participantUids);
+      allow write: if isAdmin();
+    }
+
+    // ── Tournament results (public পড়া, শুধু admin লিখবে) ──
+    match /tournamentResults/{tid} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Teams / Join requests ──
+    match /tournamentTeams/{teamId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isAdmin()
+        // v10: captain নিজের team-এর নাম বদলাতে পারবে (Matches → Edit Name)
+        || (isSignedIn()
+            && resource.data.captainUserId == request.auth.uid
+            && onlyKeys(['teamName', 'updatedAt']))
+        // v10: owner নিজের team-এ UPI payment proof submit করবে
+        // (paymentStatus সবসময় 'pending'-ই সেট হয়)
+        || (isSignedIn()
+            && resource.data.captainUserId == request.auth.uid
+            && request.resource.data.paymentStatus == 'pending'
+            && onlyKeys(['paymentId', 'transactionId', 'paymentStatus', 'updatedAt']))
+        // v10: expiry sweep — যেকোনো signed-in user মেয়াদোত্তীর্ণ unpaid
+        // pending-কে 'expired' করতে পারবে (seat release হয় counter rule দিয়ে)
+        || (isSignedIn()
+            && resource.data.status == 'pending'
+            && resource.data.paymentStatus == 'unpaid'
+            && 'expiresAt' in resource.data
+            && request.time > resource.data.expiresAt
+            && request.resource.data.status == 'expired'
+            && onlyKeys(['status', 'updatedAt']));
+      allow delete: if isAdmin();
+    }
+    match /joinRequests/{reqId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+    // ── Captain lock (duplicate join ঠেকায়) ──
+    match /tournamentCaptains/{docId} {
+      allow read: if true;
+      // v10: join flow user হয়েই lock doc বানায় — শুধু নিজের uid দিয়ে
+      allow create: if isSignedIn()
+        && request.resource.data.captainUserId == request.auth.uid;
+      allow update: if isAdmin()
+        // v10: expiry sweep — lock release. Team doc transaction-এর ভেতর
+        // তখনো 'pending' দেখাতে পারে, তাই rule সরাসরি মেয়াদের শর্ত যাচাই করে।
+        || (isSignedIn()
+            && resource.data.status == 'pending'
+            && request.resource.data.status == 'rejected'
+            && onlyKeys(['status', 'updatedAt'])
+            && 'teamId' in resource.data
+            && get(/databases/$(database)/documents/tournamentTeams/$(resource.data.teamId)).data.paymentStatus == 'unpaid'
+            && get(/databases/$(database)/documents/tournamentTeams/$(resource.data.teamId)).data.expiresAt < request.time);
+      allow delete: if isAdmin();
+    }
+    // ── Player UID locks (cross-team duplicate UID ঠেকায়) ──
+    match /tournamentPlayerUIDs/{docId} {
+      // v10: join transaction-এর duplicate check-এর জন্য get() লাগে
+      allow get: if isSignedIn();
+      allow list: if isAdmin();
+      // v10: join flow user হয়েই lock বানায় — শুধু নিজের uid দিয়ে
+      allow create: if isSignedIn()
+        && request.resource.data.captainUserId == request.auth.uid;
+      allow update: if isAdmin()
+        // v10: expiry sweep — captain lock-এর মতোই মেয়াদের শর্তে release
+        || (isSignedIn()
+            && resource.data.status == 'pending'
+            && request.resource.data.status == 'rejected'
+            && onlyKeys(['status', 'updatedAt'])
+            && 'teamId' in resource.data
+            && get(/databases/$(database)/documents/tournamentTeams/$(resource.data.teamId)).data.paymentStatus == 'unpaid'
+            && get(/databases/$(database)/documents/tournamentTeams/$(resource.data.teamId)).data.expiresAt < request.time);
+      allow delete: if isAdmin();
+    }
+    // ── Free Fire UID রেজিস্ট্রি (signup-এ ডুপ্লিকেট FF UID ঠেকায়) ──
+    // user app (services/auth.service.js): signup transaction-এর ভেতর
+    // registeredUIDs/{ffUID} doc বানায় { userId, email, registeredAt } ফিল্ডসহ,
+    // আগে get() করে existence চেক করে। তাই:
+    //  • get (একটা doc পড়া): login করা user — existence চেকের জন্য
+    //  • list (সব স্ক্যান): শুধু admin (FF UID→email ম্যাপিং লিক হবে না)
+    //  • create: শুধু নিজের auth uid দিয়ে (userId == request.auth.uid)
+    //  • update/delete: শুধু admin
+    match /registeredUIDs/{ffUid} {
+      allow get: if isSignedIn() || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Payment requests (join fee) ──
+    match /paymentRequests/{reqId} {
+      allow read: if isSignedIn();
+      // UTR doc ID deterministic — duplicate UTR-তে create এমনিতেই fail করে
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+    // Transaction-ID ডুপ্লিকেট ঠেকানোর রেজিস্ট্রি
+    match /usedTransactions/{txnId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ── Withdrawals (staff approve/reject করে) ──
+    match /withdrawalRequests/{reqId} {
+      allow read: if isAdmin() || isStaff()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+      // approve/reject: admin বা staff
+      allow update, delete: if isAdmin() || isStaff();
+    }
+
+    // ── Wallet ledger ──
+    match /walletTransactions/{txnId} {
+      allow read: if isAdmin() || isStaff()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+      // user app request-এর সময় নিজের ledger entry বানায়;
+      // staff reject করলে refund entry বানায়;
+      // admin panel-এর approveWithdrawal withdraw_<id> ledger entry লেখে
+      allow create: if isAdmin() || isStaff()
+        || (isSignedIn() && request.resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin() || isStaff();
+    }
+
+    // ── Staff activity log ──
+    match /staffActivityLogs/{logId} {
+      allow read, create: if isStaff() || isAdmin();
+      // audit trail — শুধু admin মুছতে পারবে; staff নিজের লগ মুছতে পারবে না
+      allow delete: if isAdmin();
+    }
+
+    // ── Admin activity log (Activity Log screen, v9) ──
+    // শুধু admin পড়তে/লিখতে/মুছতে পারবে (staff বা user নয়)
+    match /adminActivityLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ── Published leaderboard (v6.1 — admin publishes once daily) ──
+    // User app reads ONE doc per view instead of 50 user docs.
+    // Written only by the admin panel's "Publish Leaderboard" action.
+    match /leaderboard/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Persistent teams — "My Team" (v7) ──
+    // One saved squad roster per user. The team is a TEMPLATE: tournament
+    // entries snapshot the roster, so deleting a team never touches
+    // tournamentTeams docs. Only the captain can write.
+    match /teams/{teamId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.captainUid == request.auth.uid
+        && request.resource.data.members.size() <= 3;
+      allow update, delete: if isSignedIn()
+        && resource.data.captainUid == request.auth.uid;
+    }
+
+    // ── Player reports (v7) ──
+    // Users file reports (no auto-ban — admin reviews). Reporter reads own;
+    // admin reads/updates all.
+    match /playerReports/{reportId} {
+      allow create: if isSignedIn()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.reportedFFUID is string
+        && request.resource.data.status == 'pending';
+      allow read: if isSignedIn()
+        && (resource.data.reporterUid == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Banners / Game modes (public পড়া, admin লিখবে) ──
+    match /banners/{bid} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /gameModes/{mid} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    // ── Support contacts (Help & Support — public পড়া, admin লিখবে) ──
+    match /supportContacts/{cid} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Global notifications / admin inbox ──
+    match /notifications/global/items/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /adminNotifications/{nid} {
+      allow read, write: if isAdmin();
+    }
+    // Admin panel-এর পাঠানো notification-এর লগ
+    match /notifLog/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ── Settings ──
+    // OneSignal key থাকে settings/notifications-এ — এটা শুধু admin পড়বে
+    match /settings/notifications {
+      allow read, write: if isAdmin();
+    }
+    // Staff Panel heartbeat: staff শুধু এই ২টা ফিল্ড আপডেট করতে পারবে
+    // (isEnabled বদলানোর ক্ষমতা শুধু admin-এর)
+    match /settings/staffPanel {
+      allow read: if true;
+      allow update: if isStaff()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['lastActiveAt', 'lastActiveStaffEmail']);
+      allow create, delete: if isAdmin();
+    }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

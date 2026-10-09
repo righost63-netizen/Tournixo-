@@ -1,0 +1,282 @@
+/* ══════════════════════════════════════
+   HOME SCREEN — Redesign (Same to Same)
+   ══════════════════════════════════════ */
+body[data-page="home"] {
+    font-family: 'Manrope', -apple-system, 'SF Pro Display', sans-serif;
+}
+
+/* ── Header ── */
+.home-header {
+    padding: calc(var(--safe-top) + 8px) 18px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 11px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    border-bottom: 0.5px solid var(--border);
+}
+
+.home-header > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.home-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: linear-gradient(155deg, #2A2E36, #15171B);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #C7FF3E;
+    flex-shrink: 0;
+}
+
+.greeting-text {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    line-height: 1.15;
+}
+
+.greeting-sub {
+    font-size: 12.5px;
+    color: var(--text2);
+    margin-top: 1px;
+    font-weight: 500;
+}
+
+.home-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.wallet-preview {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 13.5px;
+}
+
+.wallet-preview svg {
+    width: 14px;
+    height: 14px;
+}
+
+.wallet-preview span:last-child {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #C7FF3E;
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 100px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.icon-btn svg {
+    width: 17px;
+    height: 17px;
+    stroke: var(--text);
+}
+
+.icon-btn .tab-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 4px;
+    border-radius: 100px;
+    background: #FF4D4D;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* ── Scroll Area ── */
+.scroll-area {
+    padding-bottom: 90px;
+}
+
+/* ── Section Headers ── */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    margin: 22px 0 13px;
+}
+
+.section-title {
+    font-size: 16.5px;
+    font-weight: 800;
+    letter-spacing: -0.1px;
+    margin: 0;
+}
+
+.section-link {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+}
+
+.section-link::after {
+    content: '›';
+    font-size: 16px;
+    line-height: 1;
+    margin-left: 2px;
+}
+
+/* ── Stats ── */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 18px 30px;
+}
+
+.stat-card {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 10px;
+    text-align: center;
+}
+
+.stat-val {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.stat-card:nth-child(3) .stat-val {
+    color: #3FD9A4;
+    font-size: 22px;
+}
+
+.stat-label {
+    font-size: 10.5px;
+    color: var(--text2);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+/* ── Mode Chips (Home override) ── */
+body[data-page="home"] .mode-scroll {
+    padding: 0 18px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-bottom: 4px;
+    scrollbar-width: none;
+}
+
+body[data-page="home"] .mode-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+body[data-page="home"] .mode-chip {
+    flex-shrink: 0;
+    padding: 9px 17px;
+    border-radius: 100px;
+    font-size: 13.5px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    background: var(--bg4);
+    white-space: nowrap;
+    min-height: unset;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+body[data-page="home"] .mode-chip.active {
+    background: #C7FF3E;
+    color: #0A0B0D;
+    border-color: #C7FF3E;
+    box-shadow: none;
+}
+
+/* ── Banner slider on Home ── */
+body[data-page="home"] .banner-slider {
+    margin: 0;
+    padding: 0 18px;
+}
+
+body[data-page="home"] .banner-img {
+    height: 190px;
+    border-radius: 20px;
+    box-shadow: none;
+    border: 1px solid var(--border);
+}
+
+body[data-page="home"] .banner-slide {
+    padding: 0 7px;
+}
+
+body[data-page="home"] .banner-dots {
+    margin-top: 14px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+body[data-page="home"] .banner-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+    background: rgba(255,255,255,.28);
+    transition: width .35s ease, background .35s ease, box-shadow .35s ease;
+}
+
+body[data-page="home"] .banner-dot.active {
+    width: 28px;
+    border-radius: 99px;
+    background: linear-gradient(135deg, #C7FF3E, #3FD9A4);
+    box-shadow: 0 0 10px rgba(199,255,62,.55);
+}
+
+body[data-page="home"] .banner-empty {
+    height: 190px;
+    margin: 0;
+    border-radius: 20px;
+}

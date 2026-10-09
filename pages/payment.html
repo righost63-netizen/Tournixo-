@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Payment - Tournixo</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/toast.css">
+    <link rel="stylesheet" href="../styles/components/confirm-dialog.css">
+    <link rel="stylesheet" href="../styles/pages/payment.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <!-- modulepreload: warm the shared module graph during HTML parse -->
+    <link rel="modulepreload" href="../scripts/app.js">
+    <link rel="modulepreload" href="../scripts/state.js">
+    <link rel="modulepreload" href="../scripts/cache.js">
+    <link rel="modulepreload" href="../firebase/firebase-init.js">
+</head>
+
+<body data-page="payment">
+    <div id="app">
+        <div id="screen-main" class="screen active">
+
+            <!-- PAYMENT BOTTOM SHEET (UPI INTENT READY) -->
+            <div id="overlay-payment" class="overlay active" onclick="if(event.target.id==='overlay-payment') closePaymentSheet()">
+                <div class="bottom-sheet" style="max-height: 94dvh;">
+                    <div class="sheet-handle"></div>
+                    <div class="sheet-content">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <h3 class="sheet-title" style="margin:0;">Payment Details</h3>
+                            <button onclick="closePaymentSheet()" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">✕</button>
+                        </div>
+                        <p id="pay-tournament-name" class="sheet-subtitle" style="margin-bottom: 12px;"></p>
+                        
+                        <!-- Tournament & Team Details Badge -->
+                        <div class="card-inset" style="margin-bottom: 14px;">
+                            <div class="row mb-4">
+                                <span class="text-sm">Team Name</span>
+                                <span id="pay-team-name" style="font-weight: 700; color: var(--text);">—</span>
+                            </div>
+                            <div class="row mb-4">
+                                <span class="text-sm">Team ID</span>
+                                <span id="pay-team-id" style="font-family: monospace; font-weight: 700; color: var(--accent);">—</span>
+                            </div>
+                            <div class="row mb-4">
+                                <span class="text-sm">Entry Fee</span>
+                                <span id="pay-fee" class="pay-fee" style="font-size: 18px; font-weight: 800; color: var(--gold);">₹0</span>
+                            </div>
+                            <div class="row">
+                                <span class="text-sm">Admin UPI ID</span>
+                                <span style="display:flex;align-items:center;gap:8px;">
+                                    <span id="pay-upi-id-display" style="font-family: monospace; font-weight: 600; color: var(--info);">—</span>
+                                    <!-- v6: copy button (design-safe, matches sheet style) -->
+                                    <button type="button" id="pay-upi-copy" class="pay-copy-btn" hidden>⧉ Copy</button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Direct UPI App Button (Intent) -->
+                        <div style="margin-bottom: 16px;">
+                            <a id="pay-upi-intent-link" href="#" class="btn btn-primary" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; font-size:15px; background: linear-gradient(135deg, #00B85C, #00D26A);">
+                                <span>⚡ Pay with UPI App (GPay / PhonePe / Paytm)</span>
+                            </a>
+                        </div>
+
+                        <!-- Payment Submission Form -->
+                        <label class="auth-label">Transaction ID (UTR / Reference ID) <span style="color:var(--error)">*</span></label>
+                        <div class="input-group">
+                            <span class="input-icon">📝</span>
+                            <input id="pay-trxid" type="text" placeholder="12-digit UPI UTR / Ref No." autocomplete="off">
+                        </div>
+                        
+                        <label class="auth-label" style="margin-top:8px;">Amount Paid (₹) <span style="color:var(--error)">*</span></label>
+                        <div class="input-group">
+                            <span class="input-icon">💵</span>
+                            <input id="pay-amount-input" type="number" readonly style="opacity: 0.85;">
+                        </div>
+                        
+                        <div style="background: rgba(255, 149, 0, 0.08); border: 0.5px solid rgba(255, 149, 0, 0.25); border-radius: 10px; padding: 10px 12px; margin: 12px 0; font-size: 12px; color: var(--text2);">
+                            ⚠️ <strong>Instructions:</strong> সম্পূর্ণ পেমেন্ট সম্পন্ন করে ব্যাংকের ট্রানজেকশন/UTR আইডি সঠিকভাবে এখানে সাবমিট করুন। অ্যাডমিন ভেরিফাই করে আপনার টিম কনফার্ম করবে।
+                        </div>
+                        
+                        <button class="btn btn-primary" id="pay-submit-btn" onclick="submitTournamentPayment()">Submit Payment</button>
+                        <div id="pay-load-error" style="display:none; text-align:center; padding:16px 8px;">
+                            <p style="color:var(--error); font-weight:600; margin-bottom:10px;">Couldn't load payment details.<br><span style="color:var(--text2); font-weight:400; font-size:13px;">Please check your connection.</span></p>
+                            <button class="btn btn-secondary" onclick="retryPaymentLoad()">Try Again</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/payment.js"></script>
+</body>
+
+</html>

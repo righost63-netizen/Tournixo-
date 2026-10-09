@@ -1,0 +1,217 @@
+/* ══════════════════════════════════════
+   MY TEAM — persistent squad roster (v7)
+   Premium dark theme, matches existing pages
+   ══════════════════════════════════════ */
+
+.my-team-page {
+    min-height: 100%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.myteam-join-banner {
+    margin: 12px 16px 4px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.14), rgba(212, 175, 55, 0.04));
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    font-size: 13px;
+    color: var(--text);
+}
+
+.myteam-join-banner b {
+    color: var(--gold);
+}
+
+.myteam-card {
+    margin: 12px 16px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+}
+
+.myteam-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.myteam-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.myteam-id {
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--accent);
+    margin-top: 2px;
+}
+
+.myteam-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: rgba(212, 175, 55, 0.14);
+    color: var(--gold);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.myteam-sec-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text2);
+    margin: 14px 0 8px;
+}
+
+.myteam-member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 8px;
+}
+
+.myteam-member.captain {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.07);
+}
+
+.myteam-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    background: var(--bg4);
+    color: var(--text2);
+    flex-shrink: 0;
+}
+
+.myteam-member.captain .myteam-avatar {
+    background: rgba(212, 175, 55, 0.18);
+    color: var(--gold);
+}
+
+.myteam-minfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.myteam-mname {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.myteam-muid {
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--text2);
+}
+
+.myteam-role {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(0, 200, 255, 0.12);
+    color: #00C8FF;
+    flex-shrink: 0;
+}
+
+.myteam-member.captain .myteam-role {
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--gold);
+}
+
+/* Duo partner select */
+.myteam-pick {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.myteam-pick.selected {
+    border-color: var(--accent);
+    background: rgba(0, 200, 255, 0.08);
+}
+
+.myteam-radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--text2);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myteam-pick.selected .myteam-radio {
+    border-color: var(--accent);
+}
+
+.myteam-pick.selected .myteam-radio::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.myteam-actions {
+    margin: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.myteam-note {
+    margin: 0 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text2);
+    background: var(--bg4);
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.myteam-danger {
+    margin: 16px;
+}
+
+.myteam-link {
+    display: block;
+    text-align: center;
+    margin: 4px 16px 0;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: underline;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}

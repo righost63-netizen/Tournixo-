@@ -1,0 +1,52 @@
+/* ══════════════════════════════════════
+     THEME VARIABLES — dark premium theme (only theme)
+     ⚠️ Load this file LAST in every page (after global/components/page CSS)
+  ══════════════════════════════════════ */
+:root {
+    /* Dark Mode (Default) */
+    --bg: #080808;
+    --bg2: #0F1115;
+    --bg3: #111827;
+    --bg4: #161F33;
+    --bg5: #1E293B;
+    --accent: #00D26A;
+    --accent2: #00B85C;
+    --accent-glow: rgba(0, 210, 106, 0.25);
+    --accent-grad: linear-gradient(135deg, #00C8FF, #3B82F6);
+    --gold: #FFD700;
+    --gold-grad: linear-gradient(135deg, #D4AF37, #FFD700, #FFA500);
+    --gold-glow: rgba(255, 215, 0, 0.20);
+    --text: #FFFFFF;
+    --text2: rgba(255, 255, 255, 0.70);
+    --text3: rgba(255, 255, 255, 0.40);
+    --success: #00E676;
+    --success-dim: rgba(0, 230, 118, 0.12);
+    --error: #FF453A;
+    --error-dim: rgba(255, 69, 58, 0.12);
+    --info: #0A84FF;
+    --info-dim: rgba(10, 132, 255, 0.12);
+    --warning: #FF9500;
+    --warning-dim: rgba(255, 149, 0, 0.12);
+    --border: rgba(255, 255, 255, 0.08);
+    --border2: rgba(255, 255, 255, 0.12);
+    --border3: rgba(255, 255, 255, 0.16);
+    --radius: 24px;
+    --radius-sm: 18px;
+    --radius-xs: 12px;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.45);
+    --shadow-accent: 0 8px 28px rgba(0, 200, 255, 0.25);
+    --shadow-gold: 0 6px 20px rgba(255, 215, 0, 0.2);
+    --safe-top: env(safe-area-inset-top, 44px);
+    --safe-bottom: env(safe-area-inset-bottom, 34px);
+    /* FIX: bg2-rgb variable for rgba() usage in tab-bar */
+    --bg2-rgb: 15, 17, 21;
+}
+
+
+body[data-page="home"] {
+    --accent: #C7FF3E;
+    --accent-dim: #8FB82C;
+    --home-mint: #3FD9A4;
+}

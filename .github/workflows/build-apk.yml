@@ -1,0 +1,99 @@
+# ── Tournixo TWA APK — GitHub Actions (Bubblewrap) ────────────────────
+# ব্যবহার: GitHub repo → Actions ট্যাব → "Build TWA APK" → Run workflow।
+# তৈরি হবে: signed APK + AAB, আর assetlinks.json (রেডি ফাইল)।
+#
+# APK বানানোর আগে ওয়েবসাইটটা Netlify-তে LIVE থাকতে হবে — Bubblewrap
+# লাইভ manifest.json পড়ে APK বানায়।
+#
+# SIGNING KEY (সবচেয়ে জরুরি):
+#  • Repo → Settings → Secrets and variables → Actions-এ আগে বসাও:
+#       KEYSTORE_PASSWORD  (নিজে একটা পাসওয়ার্ড বেছে নাও, লিখে রাখো)
+#       KEY_PASSWORD       (একই পাসওয়ার্ড দিলেই হবে)
+#  • প্রথম রানে keystore না থাকলে workflow নিজে বানিয়ে artifact হিসেবে
+#    দেবে "tournixo-keystore-KEEP-FOREVER" নামে → ডাউনলোড করে সারাজীবন
+#    সাবধানে রাখবে (Google Drive-এও এক কপি)। তারপর ওটার base64 বানিয়ে
+#    ANDROID_KEYSTORE_BASE64 secret-এ বসিয়ে দিলে সব পরের আপডেট একই
+#    key দিয়ে sign হবে। ⚠️ এই key হারালে Play Store-এ update বন্ধ।
+name: Build TWA APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Point Bubblewrap at JDK + Android SDK
+        run: |
+          mkdir -p ~/.bubblewrap
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
+          cat ~/.bubblewrap/config.json
+
+      - name: Restore or create signing key
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > android.keystore
+            echo "KEYSTORE_RESTORED=true" >> "$GITHUB_ENV"
+          else
+            keytool -genkeypair -v -keystore android.keystore -alias tournixo \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$KS_PASS" -keypass "$KEY_PASS" \
+              -dname "CN=Tournixo, OU=Tournixo, O=Tournixo, L=Kolkata, ST=West Bengal, C=IN"
+            echo "KEYSTORE_RESTORED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build signed APK + AAB (Bubblewrap / TWA)
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: bubblewrap build --skipPwaValidation
+
+      - name: Make ready-to-use assetlinks.json
+        env:
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          FP=$(keytool -list -v -keystore android.keystore -alias tournixo -storepass "$KS_PASS" | grep 'SHA256:' | awk '{print $2}')
+          mkdir -p dist-assetlinks
+          cat > dist-assetlinks/assetlinks.json <<JSON
+          [{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"app.tournixo.twa","sha256_cert_fingerprints":["$FP"]}}]
+          JSON
+          cat dist-assetlinks/assetlinks.json
+
+      - name: Upload APK + AAB + assetlinks
+        uses: actions/upload-artifact@v4
+        with:
+          name: tournixo-apk
+          path: |
+            *.apk
+            *.aab
+            dist-assetlinks/assetlinks.json
+          if-no-files-found: error
+
+      - name: Upload NEW keystore (শুধু প্রথমবার — চিরদিনের জন্য রেখে দাও!)
+        if: env.KEYSTORE_RESTORED == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tournixo-keystore-KEEP-FOREVER
+          path: android.keystore
+          if-no-files-found: error

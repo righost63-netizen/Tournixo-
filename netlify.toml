@@ -1,0 +1,61 @@
+# ── Tournixo — Netlify production config ─────────────────────────────
+# Repo root = publish root (index.html lives here). No build step needed.
+[build]
+  publish = "."
+  command = ""
+
+# ── Security headers ─────────────────────────────────────────────────
+# CSP notes (fixed 2026-10-09):
+#  • connect-src MUST include api.cloudinary.com — ছবি upload হলো fetch(),
+#    img-src দিয়ে হয় না। এটা না থাকায় Netlify-তে profile photo upload
+#    CSP-তে block হচ্ছিল (localhost-এ netlify.toml লাগে না, তাই ওখানে চলত)।
+#  • frame-src: Firebase Auth handler (*.firebaseapp.com) + OneSignal prompt।
+#  • worker-src: OneSignal service worker CDN থেকে importScripts করে।
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.onesignal.com https://www.gstatic.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com wss://firestore.googleapis.com https://onesignal.com https://*.onesignal.com wss://*.firebaseio.com https://api.cloudinary.com https://res.cloudinary.com; frame-src https://*.firebaseapp.com https://onesignal.com https://*.onesignal.com https://www.google.com; worker-src 'self' https://cdn.onesignal.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+
+# ── HTML: সবসময় fresh (নতুন deploy সাথে সাথে দেখা যাবে) ─────────────
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/pages/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ── Service workers: কখনোই cache না (নাহলে পুরনো app আটকে থাকে) ──────
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/OneSignalSDKWorker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+# ── Manifest ─────────────────────────────────────────────────────────
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# ── TWA Digital Asset Links (APK → website যাচাই) ─────────────────────
+[[headers]]
+  for = "/.well-known/assetlinks.json"
+  [headers.values]
+    Content-Type = "application/json"
+    Cache-Control = "public, max-age=3600"

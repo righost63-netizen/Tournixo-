@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Report Player - Tournixo</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/components/toast.css">
+    <link rel="stylesheet" href="../styles/components/confirm-dialog.css">
+    <link rel="stylesheet" href="../styles/pages/profile.css">
+    <link rel="stylesheet" href="../styles/theme.css">
+    <link rel="modulepreload" href="../scripts/app.js">
+    <link rel="modulepreload" href="../scripts/state.js">
+    <link rel="modulepreload" href="../scripts/cache.js">
+    <link rel="modulepreload" href="../firebase/firebase-init.js">
+</head>
+
+<body data-page="reportPlayer">
+    <div id="app">
+        <div id="screen-main" class="screen active">
+
+            <!-- pages/report-player.html — Fair play report form (v7.1) -->
+            <div class="page" id="page-report-player" style="min-height:100%;background:var(--bg);display:flex;flex-direction:column;">
+                <div class="top-nav" style="justify-content:flex-start;gap:14px;">
+                    <button class="back-btn" onclick="goBack('profile')">‹ Back</button>
+                    <h1>Report Player</h1>
+                </div>
+
+                <div class="scroll-area">
+                    <div class="prf-card" style="margin:12px 16px;padding:18px 16px;">
+                        <div style="font-size:15px;font-weight:800;margin-bottom:4px;">🚨 Report a Player</div>
+                        <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.6;">
+                            Seen hacking, abuse or a fake UID? Reports are reviewed by the
+                            Tournixo team — no automatic bans. Max 3 reports per day.
+                        </div>
+                        <label class="auth-label">Player's Free Fire UID <span style="color:var(--error)">*</span></label>
+                        <div class="input-group">
+                            <span class="input-icon">🎯</span>
+                            <input id="report-ffuid" type="number" placeholder="Numeric Gaming UID" inputmode="numeric">
+                        </div>
+                        <label class="auth-label">Reason <span style="color:var(--error)">*</span></label>
+                        <div class="input-group">
+                            <span class="input-icon">📝</span>
+                            <select id="report-reason" style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;">
+                                <option value="">Select a reason…</option>
+                            </select>
+                        </div>
+                        <label class="auth-label">Details (optional)</label>
+                        <div class="input-group">
+                            <span class="input-icon">💬</span>
+                            <input id="report-details" type="text" placeholder="What happened? (max 500 chars)" maxlength="500">
+                        </div>
+                        <button class="btn btn-primary btn-block" id="report-submit-btn" style="margin-top:10px;">Submit Report</button>
+                    </div>
+                    <div style="height:24px;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module" src="../scripts/report-player.js"></script>
+</body>
+
+</html>

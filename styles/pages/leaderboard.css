@@ -1,0 +1,227 @@
+/* ══════════════════════════════════════
+     LEADERBOARD — REDESIGN
+     (scoped to body[data-page="leaderboard"] so no other page is affected)
+  ══════════════════════════════════════ */
+body[data-page="leaderboard"] {
+    --bg: #0A0B0D;
+    --bg2: #0A0B0D;
+    --bg3: #1B1E23;
+    --bg4: #15171B;
+    --bg5: #1B1E23;
+    --accent: #C7FF3E;
+    --accent2: #A8E62E;
+    --text: #F2F3F5;
+    --text2: #868C96;
+    --text3: #5C616A;
+    --border: rgba(255, 255, 255, .07);
+    --border2: rgba(255, 255, 255, .07);
+    --mint: #3FD9A4;
+    --gold: #F2C94C;
+    --silver: #C9CDD3;
+    --bronze: #D89B6A;
+    font-family: 'Manrope', -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+}
+
+body[data-page="leaderboard"] .top-nav {
+    background: var(--bg);
+    border-bottom: none;
+    padding: calc(var(--safe-top) + 8px) 20px 4px;
+}
+
+body[data-page="leaderboard"] .top-nav h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.3px;
+}
+
+body[data-page="leaderboard"] .scroll-area {
+    padding: 4px 18px 90px;
+}
+
+/* ── Podium ── */
+body[data-page="leaderboard"] .podium {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+body[data-page="leaderboard"] .p-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body[data-page="leaderboard"] .p-av {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #0A0B0D;
+    background: linear-gradient(135deg, #B6F26B, var(--mint));
+    margin-bottom: 9px;
+    position: relative;
+}
+
+body[data-page="leaderboard"] .p-col.g1 .p-av {
+    width: 78px;
+    height: 78px;
+    font-size: 24px;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 22px rgba(242, 201, 76, .35);
+}
+
+body[data-page="leaderboard"] .p-col.g2 .p-av {
+    width: 62px;
+    height: 62px;
+    font-size: 19px;
+    border: 2px solid var(--silver);
+}
+
+body[data-page="leaderboard"] .p-col.g3 .p-av {
+    width: 62px;
+    height: 62px;
+    font-size: 19px;
+    border: 2px solid var(--bronze);
+}
+
+body[data-page="leaderboard"] .medal {
+    position: absolute;
+    top: -16px;
+    font-size: 15px;
+}
+
+body[data-page="leaderboard"] .p-name {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+body[data-page="leaderboard"] .p-uid {
+    font-size: 10px;
+    color: var(--text2);
+    font-weight: 600;
+    margin: 2px 0 6px;
+}
+
+body[data-page="leaderboard"] .p-amt {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+body[data-page="leaderboard"] .p-bar {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text2);
+}
+
+body[data-page="leaderboard"] .p-col.g1 .p-bar {
+    height: 64px;
+    background: var(--bg5);
+    color: var(--gold);
+}
+
+body[data-page="leaderboard"] .p-col.g2 .p-bar { height: 46px; }
+body[data-page="leaderboard"] .p-col.g3 .p-bar { height: 36px; }
+
+/* ── You banner ── */
+body[data-page="leaderboard"] .you-banner {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: rgba(63, 217, 164, .08);
+    border: 1px solid rgba(63, 217, 164, .25);
+    border-radius: 14px;
+    padding: 13px 15px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #B9E9D4;
+    margin-bottom: 20px;
+}
+
+body[data-page="leaderboard"] .you-banner b { color: var(--mint); }
+
+/* ── List ── */
+body[data-page="leaderboard"] .list {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+body[data-page="leaderboard"] .l-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+body[data-page="leaderboard"] .l-row:last-child { border-bottom: none; }
+
+body[data-page="leaderboard"] .l-row.me {
+    background: rgba(199, 255, 62, .06);
+}
+
+body[data-page="leaderboard"] .l-rank {
+    width: 18px;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--text2);
+    text-align: center;
+}
+
+body[data-page="leaderboard"] .l-av {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2E67D6, #1B3D82);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+body[data-page="leaderboard"] .l-body {
+    flex: 1;
+    min-width: 0;
+}
+
+body[data-page="leaderboard"] .l-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body[data-page="leaderboard"] .l-uid {
+    font-size: 11px;
+    color: var(--text2);
+    font-weight: 600;
+}
+
+body[data-page="leaderboard"] .l-amt {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--text2);
+    flex-shrink: 0;
+}
+
+/* ── Empty state ── */
+body[data-page="leaderboard"] .empty-state { color: var(--text); }
+body[data-page="leaderboard"] .empty-sub { color: var(--text2); }

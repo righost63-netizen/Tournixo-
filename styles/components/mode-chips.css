@@ -1,0 +1,36 @@
+/* Mode Chips */
+.mode-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 18px;
+    margin-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.mode-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.mode-chip {
+    flex-shrink: 0;
+    padding: 9px 17px;
+    border-radius: 100px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    color: var(--text2);
+    min-height: unset;
+    display: flex;
+    align-items: center;
+}
+
+.mode-chip.active {
+    background: #C7FF3E;
+    border-color: #C7FF3E;
+    color: #0A0B0D;
+}

@@ -1,0 +1,266 @@
+/* ══════════════════════════════════════
+     PROFILE — REDESIGN
+     (scoped to body[data-page="profile"] so no other page is affected)
+  ══════════════════════════════════════ */
+body[data-page="profile"] {
+    --bg: #0A0B0D;
+    --bg2: #0A0B0D;
+    --bg3: #1B1E23;
+    --bg4: #15171B;
+    --bg5: #1B1E23;
+    --accent: #C7FF3E;
+    --accent2: #A8E62E;
+    --text: #F2F3F5;
+    --text2: #868C96;
+    --text3: #5C616A;
+    --border: rgba(255, 255, 255, .07);
+    --border2: rgba(255, 255, 255, .07);
+    --mint: #3FD9A4;
+    --red: #FF6B6B;
+    font-family: 'Manrope', -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+}
+
+body[data-page="profile"] .scroll-area {
+    padding: calc(var(--safe-top) + 22px) 18px 90px;
+}
+
+/* ── Top: avatar / name / chips ── */
+body[data-page="profile"] .prf-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 26px;
+}
+
+body[data-page="profile"] .prf-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 24px;
+    background: linear-gradient(155deg, #20242B, #121417);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 14px;
+}
+
+body[data-page="profile"] .prf-name {
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -.2px;
+}
+
+body[data-page="profile"] .prf-chip-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+body[data-page="profile"] .prf-chip {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 13px;
+    border-radius: 100px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+body[data-page="profile"] .prf-chip.earn {
+    color: var(--mint);
+    border-color: rgba(63, 217, 164, .25);
+    background: rgba(63, 217, 164, .06);
+}
+
+body[data-page="profile"] .prf-meta-icon { font-size: 13px; }
+
+/* ── Section label ── */
+body[data-page="profile"] .prf-sec-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    color: var(--text2);
+    margin: 26px 0 10px;
+}
+
+/* ── Stats grid ── */
+body[data-page="profile"] .prf-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+body[data-page="profile"] .prf-stat-card {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+body[data-page="profile"] .prf-stat-ic {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: var(--bg5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+}
+
+body[data-page="profile"] .prf-stat-num {
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+body[data-page="profile"] .prf-stat-lbl {
+    font-size: 11px;
+    color: var(--text2);
+    font-weight: 600;
+    margin-top: 3px;
+}
+
+/* ── Card / rows (preferences, app links) ── */
+body[data-page="profile"] .prf-card {
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+body[data-page="profile"] .prf-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+body[data-page="profile"] .prf-row:last-child { border-bottom: none; }
+
+body[data-page="profile"] .prf-row.tappable {
+    cursor: pointer;
+    transition: background .15s;
+}
+
+body[data-page="profile"] .prf-row.tappable:active {
+    background: rgba(255, 255, 255, .04);
+}
+
+body[data-page="profile"] .prf-row-ic {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--bg5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+body[data-page="profile"] .prf-row-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+body[data-page="profile"] .prf-row.danger .prf-row-label { color: var(--red); }
+
+body[data-page="profile"] .prf-chev {
+    color: var(--text2);
+    font-size: 15px;
+}
+
+/* ── Toggle switch (JS toggles the "on" class on #notif-toggle) ── */
+body[data-page="profile"] .toggle {
+    width: 40px;
+    height: 23px;
+    background: var(--bg5);
+    border-radius: 100px;
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+body[data-page="profile"] .toggle.on { background: var(--mint); }
+
+body[data-page="profile"] .toggle::after {
+    content: '';
+    position: absolute;
+    top: 2.5px;
+    left: 2.5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+}
+
+body[data-page="profile"] .toggle.on::after {
+    transform: translateX(17px);
+}
+
+/* Winning Balance stat — spans full width under Joined/Wins */
+body[data-page="profile"] .prf-stat-card--wide {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, rgba(199, 255, 62, 0.08), rgba(63, 217, 164, 0.06));
+    border-color: rgba(199, 255, 62, 0.22);
+}
+
+/* ── Standalone logout — danger zone style ── */
+body[data-page="profile"] .prf-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 56px;
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 69, 58, 0.4);
+    background: linear-gradient(135deg, rgba(255, 69, 58, 0.16), rgba(255, 69, 58, 0.07));
+    color: #ff6b62;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    box-shadow: 0 10px 28px rgba(255, 69, 58, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+body[data-page="profile"] .prf-logout-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 14px rgba(255, 69, 58, 0.1);
+}
+
+body[data-page="profile"] .prf-logout-ic {
+    font-size: 19px;
+}
+
+body[data-page="profile"] .prf-version {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+}

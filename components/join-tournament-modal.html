@@ -1,0 +1,29 @@
+<!-- REGISTRATION / JOIN MODAL (SOLO, DUO, SQUAD) -->
+<div id="modal-join-tournament" class="full-modal">
+    <div class="modal-header">
+        <button class="back-btn" onclick="closeModal('modal-join-tournament')">‹ Back</button>
+        <h2 id="join-modal-title">Join Tournament</h2>
+    </div>
+    <div class="scroll-area" style="padding: 16px 20px 80px;">
+        <!-- Tournament Mini Summary -->
+        <div class="card-inset" style="margin-bottom: 16px;">
+            <div style="font-size: 16px; font-weight: 800; color: var(--text);" id="join-summary-name">—</div>
+            <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+                <span class="badge badge-mode" id="join-summary-mode">—</span>
+                <span class="badge badge-paid" id="join-summary-fee">—</span>
+                <span class="badge" style="background: rgba(0, 200, 255, 0.12); color: #00C8FF;" id="join-summary-format">—</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Form Container -->
+        <div id="join-form-container">
+            <!-- Javascript will dynamically inject Solo / Duo / Squad fields here -->
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn btn-primary" id="join-submit-btn" onclick="submitTournamentRegistration()">
+                <span>Confirm & Proceed</span>
+            </button>
+        </div>
+    </div>
+</div>

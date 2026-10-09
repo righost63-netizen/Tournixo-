@@ -1,0 +1,147 @@
+/* glass refinement (toast part of the original group rule) — merged */
+.toast {
+    background: rgba(20, 20, 28, 0.97);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 14px;
+    padding: 13px 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0.5px solid rgba(255, 255, 255, 0.10);
+    border-left: 3px solid var(--accent);
+    animation: fadeIn 0.3s ease forwards;
+    transition: all 0.2s ease;
+    pointer-events: all;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* ══════════════════════════════════════
+     TOAST
+  ══════════════════════════════════════ */
+#toast-container {
+    position: fixed;
+    top: calc(var(--safe-top) + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+    max-width: 380px;
+    width: calc(100% - 32px);
+}
+
+.toast.success {
+    border-left-color: var(--success);
+}
+
+.toast.error {
+    border-left-color: var(--error);
+}
+
+.toast.info {
+    border-left-color: var(--info);
+}
+
+.toast.warning {
+    border-left-color: var(--warning);
+}
+
+.toast.hide {
+    animation: fadeIn 0.2s ease reverse forwards;
+}
+
+/* ══════════════════════════════════════
+     OFFLINE BANNER  (scripts/network.js toggles html.offline)
+  ══════════════════════════════════════ */
+#offline-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9998;
+    padding: calc(var(--safe-top) + 6px) 12px 8px;
+    background: var(--warning);
+    color: #1a1200;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    transform: translateY(-100%);
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    pointer-events: none;
+}
+
+html.offline #offline-banner {
+    transform: translateY(0);
+    visibility: visible;
+    transition: transform 0.25s ease, visibility 0s;
+}
+
+/* keep toasts readable below the banner while offline */
+html.offline #toast-container {
+    top: calc(var(--safe-top) + 48px);
+}
+
+/* ══════════════════════════════════════
+     PAGE ERROR SHEET  (scripts/app.js showPageError)
+  ══════════════════════════════════════ */
+#ff-error-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    padding-bottom: calc(var(--safe-bottom) + 16px);
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.ff-error-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 22px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.ff-error-ic {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+.ff-error-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.ff-error-text {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text2);
+    margin-bottom: 16px;
+}
+
+.ff-error-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.ff-error-actions .btn {
+    flex: 1;
+    padding: 13px;
+    min-height: 48px;
+    font-size: 15px;
+}

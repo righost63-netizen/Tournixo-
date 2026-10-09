@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════
+   PREMIUM HOME BANNER — 16:9
+   Cinematic glide · gap between banners · spotlight active slide
+   ═══════════════════════════════════════ */
+
+.banner-slider {
+    width: 100%;
+    box-sizing: border-box;
+
+    /* Header থেকে clear separation */
+    margin-top: 20px !important;
+    margin-bottom: 0;
+
+    padding-left: 16px;
+    padding-right: 16px;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-track {
+    display: flex;
+    width: 100%;
+
+    /* premium cinematic glide */
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+
+    will-change: transform;
+}
+
+.banner-slide {
+    min-width: 100%;
+    width: 100%;
+    /* visible gap between banners — the slide is still 100% wide,
+       so translateX(-idx*100%) math stays exact */
+    padding: 0 7px;
+    box-sizing: border-box;
+}
+
+/* YouTube-style 16:9 banner */
+.banner-card {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #11151d;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.35),
+        0 2px 8px rgba(0, 0, 0, 0.20);
+
+    box-sizing: border-box;
+
+    /* spotlight — inactive slides shrink + dim, the visible one pops */
+    transform: scale(.94);
+    filter: brightness(.68) saturate(.85);
+    transition:
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.7s ease,
+        box-shadow 0.7s ease;
+}
+
+/* Active slide: full size, full color, lifted shadow */
+.banner-slide.active .banner-card {
+    transform: scale(1);
+    filter: brightness(1) saturate(1);
+    box-shadow:
+        0 14px 36px rgba(0, 0, 0, 0.45),
+        0 2px 8px rgba(0, 0, 0, 0.20),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Cinematic slow zoom on the visible banner image */
+.banner-slide.active .banner-img {
+    animation: bannerKenBurns 7s ease-out forwards;
+}
+
+@keyframes bannerKenBurns {
+    from { transform: scale(1.12); }
+    to   { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .banner-track, .banner-card { transition: none; }
+    .banner-slide.active .banner-img { animation: none; }
+}
+
+/* Banner image */
+.banner-card .banner-img {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center center;
+
+    border: 0;
+    border-radius: inherit;
+
+    background: #11151d;
+}
+
+/* Premium subtle overlay */
+.banner-card::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.02) 0%,
+        rgba(0, 0, 0, 0.08) 100%
+    );
+}
+
+/* Empty banner */
+.banner-empty-card {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    border-radius: 20px;
+
+    background: #11151d;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-img-placeholder {
+    font-size: 42px;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+
+    .banner-slider {
+        margin-top: 20px !important;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .banner-card,
+    .banner-empty-card {
+        aspect-ratio: 16 / 9;
+        border-radius: 20px;
+    }
+}
