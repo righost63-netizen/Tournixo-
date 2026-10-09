@@ -1,4 +1,25 @@
 # ── Tournixo TWA APK — GitHub Actions (Bubblewrap) ────────────────────
+# ব্যবহার: GitHub repo → Actions ট্যাব → "Build TWA APK" → Run workflow।
+# তৈরি হবে: signed APK + AAB, আর assetlinks.json (রেডি ফাইল)।
+#
+# APK বানানোর আগে ওয়েবসাইটটা Netlify-তে LIVE থাকতে হবে — Bubblewrap
+# লাইভ manifest.json পড়ে APK বানায়।
+#
+# আগের error (exit code 130): শুধু twa-manifest.json থাকলে bubblewrap build
+# checksum ফাইল না পেয়ে ইন্টার‌্যাক্টিভ "regenerate? (Y/n)" প্রশ্ন করত।
+# GitHub Actions-এ কীবোর্ড/উত্তর দেওয়ার সুযোগ নেই, তাই job মারা যেত।
+# এখন build-এর আগে `bubblewrap update --skipVersionUpgrade` চালিয়ে
+# project + checksum non-interactive ভাবে তৈরি করা হয়, তারপর build চলে।
+#
+# SIGNING KEY (সবচেয়ে জরুরি):
+#  • Repo → Settings → Secrets and variables → Actions-এ আগে বসাও:
+#       KEYSTORE_PASSWORD  (নিজে একটা পাসওয়ার্ড বেছে নাও, লিখে রাখো)
+#       KEY_PASSWORD       (একই পাসওয়ার্ড দিলেই হবে)
+#  • প্রথম রানে keystore না থাকলে workflow নিজে বানিয়ে artifact হিসেবে
+#    দেবে "tournixo-keystore-KEEP-FOREVER" নামে → ডাউনলোড করে সারাজীবন
+#    সাবধানে রাখবে (Google Drive-এও এক কপি)। তারপর ওটার base64 বানিয়ে
+#    ANDROID_KEYSTORE_BASE64 secret-এ বসিয়ে দিলে সব পরের আপডেট একই
+#    key দিয়ে sign হবে। ⚠️ এই key হারালে Play Store-এ update বন্ধ।
 name: Build TWA APK
 
 on:
@@ -20,12 +41,7 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK Environment for Bubblewrap
-        run: |
-          sudo chown -R $USER:$USER /usr/local/lib/android/sdk
-          sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest /usr/local/lib/android/sdk/tools 2>/dev/null || true
-          sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin /usr/local/lib/android/sdk/bin 2>/dev/null || true
-          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+        uses: android-actions/setup-android@v3
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
@@ -33,51 +49,61 @@ jobs:
       - name: Point Bubblewrap at JDK + Android SDK
         run: |
           mkdir -p ~/.bubblewrap
-          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "/usr/local/lib/android/sdk" > ~/.bubblewrap/config.json
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
           cat ~/.bubblewrap/config.json
 
       - name: Restore or create signing key
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          KS_PASS_SECRET: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASS_SECRET: ${{ secrets.KEY_PASSWORD }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          PASS="${KS_PASS_SECRET:-tournixo12345}"
-          KEYPASS="${KEY_PASS_SECRET:-tournixo12345}"
-          echo "EFFECTIVE_KS_PASS=$PASS" >> "$GITHUB_ENV"
-          echo "EFFECTIVE_KEY_PASS=$KEYPASS" >> "$GITHUB_ENV"
+          if [ -z "$KS_PASS" ] || [ -z "$KEY_PASS" ]; then
+            echo "::error::KEYSTORE_PASSWORD এবং KEY_PASSWORD secrets আগে বসাতে হবে"
+            exit 1
+          fi
           if [ -n "$KS_B64" ]; then
             echo "$KS_B64" | base64 -d > android.keystore
             echo "KEYSTORE_RESTORED=true" >> "$GITHUB_ENV"
           else
             keytool -genkeypair -v -keystore android.keystore -alias tournixo \
               -keyalg RSA -keysize 2048 -validity 10000 \
-              -storepass "$PASS" -keypass "$KEYPASS" \
+              -storepass "$KS_PASS" -keypass "$KEY_PASS" \
               -dname "CN=Tournixo, OU=Tournixo, O=Tournixo, L=Kolkata, ST=West Bengal, C=IN"
             echo "KEYSTORE_RESTORED=false" >> "$GITHUB_ENV"
           fi
 
+      # ✅ [FIX: exit 130] `bubblewrap build` সরাসরি চালালে checksum ফাইল না
+      # পেয়ে interactive prompt আসে, যা CI-তে উত্তর দিতে না পেরে fail করে।
+      # `update --skipVersionUpgrade` দিলে project + checksum ফাইল তৈরি হয়ে যায়
+      # এবং কোনো prompt আসে না।
       - name: Generate/update Android project (non-interactive)
         run: |
           set -euo pipefail
           bubblewrap update --skipVersionUpgrade
-          if [ -f app/build.gradle ]; then
-            sed -i 's/splashScreenFadeOutDuration: ,/splashScreenFadeOutDuration: 300,/g' app/build.gradle
-          fi
+          ls -la twa-manifest.json
 
+      # ⚠️ এখানে `yes y | script ...` জাতীয় কিছু দিও না — আগের রানে ওটাই
+      # হাজার হাজার "y" পাঠিয়ে Android build-টাকে মাঝপথে "The operation
+      # was canceled" করে বাতিল করে দিয়েছিল। আগের update step project +
+      # checksum তৈরি করে দেওয়ায় build-এ আর কোনো প্রশ্ন আসে না, আর
+      # keystore password env থেকে আসে — তাই plain build-ই যথেষ্ট।
       - name: Build signed APK + AAB (Bubblewrap / TWA)
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          export BUBBLEWRAP_KEYSTORE_PASSWORD="$EFFECTIVE_KS_PASS"
-          export BUBBLEWRAP_KEY_PASSWORD="$EFFECTIVE_KEY_PASS"
-          yes y | script -qec "bubblewrap build --skipPwaValidation" /dev/null
+          bubblewrap build --skipPwaValidation
           ls -lh ./*.apk ./*.aab 2>/dev/null || find . -maxdepth 4 \( -name "*.apk" -o -name "*.aab" \) -print
 
       - name: Make ready-to-use assetlinks.json
+        env:
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
-          FP=$(keytool -list -v -keystore android.keystore -alias tournixo -storepass "$EFFECTIVE_KS_PASS" | grep 'SHA256:' | awk '{print $2}')
+          FP=$(keytool -list -v -keystore android.keystore -alias tournixo -storepass "$KS_PASS" | grep 'SHA256:' | awk '{print $2}')
           test -n "$FP"
           mkdir -p dist-assetlinks
           printf '[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"app.tournixo.twa","sha256_cert_fingerprints":["%s"]}}]\n' "$FP" > dist-assetlinks/assetlinks.json
@@ -102,3 +128,4 @@ jobs:
           name: tournixo-keystore-KEEP-FOREVER
           path: android.keystore
           if-no-files-found: error
+          
