@@ -22,10 +22,9 @@ jobs:
       - name: Setup Android SDK Environment for Bubblewrap
         run: |
           sudo chown -R $USER:$USER /usr/local/lib/android/sdk
-          ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest /usr/local/lib/android/sdk/tools
-          ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin /usr/local/lib/android/sdk/bin
+          sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest /usr/local/lib/android/sdk/tools 2>/dev/null || true
+          sudo ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin /usr/local/lib/android/sdk/bin 2>/dev/null || true
           echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
           yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
 
       - name: Install Bubblewrap
@@ -43,6 +42,7 @@ jobs:
           KS_PASS_SECRET: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_PASS_SECRET: ${{ secrets.KEY_PASSWORD }}
         run: |
+          set -euo pipefail
           PASS="${KS_PASS_SECRET:-tournixo12345}"
           KEYPASS="${KEY_PASS_SECRET:-tournixo12345}"
           echo "EFFECTIVE_KS_PASS=$PASS" >> "$GITHUB_ENV"
@@ -58,19 +58,27 @@ jobs:
             echo "KEYSTORE_RESTORED=false" >> "$GITHUB_ENV"
           fi
 
+      - name: Generate/update Android project (non-interactive)
+        run: |
+          set -euo pipefail
+          bubblewrap update --skipVersionUpgrade
+          ls -la twa-manifest.json
+
       - name: Build signed APK + AAB (Bubblewrap / TWA)
         run: |
+          set -euo pipefail
           export BUBBLEWRAP_KEYSTORE_PASSWORD="$EFFECTIVE_KS_PASS"
           export BUBBLEWRAP_KEY_PASSWORD="$EFFECTIVE_KEY_PASS"
-          bubblewrap build --skipPwaValidation
+          yes y | script -qec "bubblewrap build --skipPwaValidation" /dev/null
+          ls -lh ./*.apk ./*.aab 2>/dev/null || find . -maxdepth 4 \( -name "*.apk" -o -name "*.aab" \) -print
 
       - name: Make ready-to-use assetlinks.json
         run: |
+          set -euo pipefail
           FP=$(keytool -list -v -keystore android.keystore -alias tournixo -storepass "$EFFECTIVE_KS_PASS" | grep 'SHA256:' | awk '{print $2}')
+          test -n "$FP"
           mkdir -p dist-assetlinks
-          cat > dist-assetlinks/assetlinks.json <<JSON
-          [{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"app.tournixo.twa","sha256_cert_fingerprints":["$FP"]}}]
-          JSON
+          printf '[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"app.tournixo.twa","sha256_cert_fingerprints":["%s"]}}]\n' "$FP" > dist-assetlinks/assetlinks.json
           cat dist-assetlinks/assetlinks.json
 
       - name: Upload APK + AAB + assetlinks
@@ -80,6 +88,8 @@ jobs:
           path: |
             *.apk
             *.aab
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
             dist-assetlinks/assetlinks.json
           if-no-files-found: error
 

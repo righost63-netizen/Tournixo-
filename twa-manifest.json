@@ -12,8 +12,8 @@
   "startUrl": "/index.html",
   "iconUrl": "https://tournixo.netlify.app/icons/icon-512.png",
   "maskableIconUrl": "https://tournixo.netlify.app/icons/icon-maskable-512.png",
-  "appVersion": "7.3.0",
-  "appVersionCode": 730,
+  "appVersion": "7.4.0",
+  "appVersionCode": 740,
   "signingKey": {
     "path": "./android.keystore",
     "alias": "tournixo"

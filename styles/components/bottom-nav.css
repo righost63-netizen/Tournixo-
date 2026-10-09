@@ -2,10 +2,16 @@
      BOTTOM TAB BAR
   ══════════════════════════════════════ */
 .tab-bar {
-    position: absolute;
+    /* FIX (FINAL): installed app-এ #app কিছু ফোনে আসল visible screen-এর
+       চেয়ে লম্বা হিসাব হতো, তাই absolute bottom-nav screen-এর নিচে চলে
+       গিয়ে আইকনগুলো অর্ধেক কাটা দেখাত। Fixed position দিলে nav সবসময়
+       আসল viewport-এর একদম নিচে থাকে — #app-এর height যাই হোক। */
+    position: fixed;
     bottom: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
+    max-width: 430px;
     z-index: 1000;
     background: rgba(var(--bg2-rgb), 0.92);
     backdrop-filter: blur(15px) saturate(180%);
@@ -15,7 +21,7 @@
     align-items: flex-start;
     justify-content: space-around;
     padding-top: 10px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 34px));
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
     transition: all 0.2s ease;
 }
 

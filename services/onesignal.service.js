@@ -89,7 +89,12 @@ export function initOneSignal() {
         try {
             await OneSignal.init({
                 appId: ONESIGNAL_CONFIG.appId,
-                allowLocalhostAsSecureOrigin: ONESIGNAL_CONFIG.allowLocalhostAsSecureOrigin
+                allowLocalhostAsSecureOrigin: ONESIGNAL_CONFIG.allowLocalhostAsSecureOrigin,
+                // মার্জ করা worker (sw.js-এর মাথায় OneSignal worker import করা):
+                // আলাদা OneSignalSDKWorker.js রাখলে একই scope নিয়ে দুই worker
+                // পালাবদলি হয় — তখন push এলেও স্ক্রিনে দেখা যায় না।
+                serviceWorkerPath: 'sw.js',
+                serviceWorkerParam: { scope: '/' }
             });
         } catch (e) {
             warn('[OneSignal] init failed:', e.message);

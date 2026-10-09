@@ -1,3 +1,10 @@
+// ── OneSignal push worker — MUST be the very first line ──
+// (OneSignal এই worker দিয়েই push দেখায়। আমাদের cache worker-এর সাথে
+//  একই scope '/' নিয়ে আগের আলাদা OneSignalSDKWorker.js-টা টক্কর দিত —
+//  তাই এখন দুটো এক ফাইলে মার্জ। SDK init-এ serviceWorkerPath: 'sw.js'
+//  দেওয়া আছে, তাই SDK এই ফাইলটাই ব্যবহার করে।)
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+
 // ── Tournixo User App: Service Worker ──
 // • Navigations (pages/*.html): network-first → আপডেট সাথে সাথে দেখা যায়,
 //   offline হলে cache থেকে shell আসে
@@ -5,7 +12,7 @@
 // • Firebase / Firestore / Auth / Fonts / OneSignal / Cloudinary: কখনো cache না
 // ⚠️ প্রতিটা release-এ CACHE-এর নাম বদলে দাও (পুরনো cache auto-clean হবে)।
 
-const CACHE = 'tournixo-user-v7-3';
+const CACHE = 'tournixo-user-v7-7-final';
 
 const BYPASS_HOSTS = [
   'firestore.googleapis.com',

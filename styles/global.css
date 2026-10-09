@@ -41,6 +41,14 @@ html.auth-pending body {
     background: var(--bg);
 }
 
+/* Installed app (PWA/TWA): কিছু Android ফোনে 100dvh আসল দেখা-যাওয়া
+   অংশের চেয়ে বড় হয়। Small-viewport height সেটা ঠেকায়। */
+@supports (height: 100svh) {
+    #app {
+        height: 100svh;
+    }
+}
+
 /* ══════════════════════════════════════
      SCREENS
   ══════════════════════════════════════ */
