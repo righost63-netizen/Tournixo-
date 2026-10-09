@@ -18,11 +18,14 @@
     "path": "./android.keystore",
     "alias": "tournixo"
   },
+  "splashScreenFadeOutDuration": 300,
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://tournixo.netlify.app/manifest.json",
   "fallbackType": "customtabs",
   "features": {},
-  "alphaDependencies": { "enabled": false },
+  "alphaDependencies": {
+    "enabled": false
+  },
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "orientation": "portrait"

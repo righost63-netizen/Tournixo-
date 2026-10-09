@@ -62,7 +62,9 @@ jobs:
         run: |
           set -euo pipefail
           bubblewrap update --skipVersionUpgrade
-          ls -la twa-manifest.json
+          if [ -f app/build.gradle ]; then
+            sed -i 's/splashScreenFadeOutDuration: ,/splashScreenFadeOutDuration: 300,/g' app/build.gradle
+          fi
 
       - name: Build signed APK + AAB (Bubblewrap / TWA)
         run: |
