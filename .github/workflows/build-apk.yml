@@ -44,20 +44,33 @@ jobs:
       # পুরনো 'tools' প্যাকেজটা থাকে, যেটা Google তাদের সার্ভার থেকে সরিয়ে
       # দিয়েছে — তাই SDK ধাপ আগেই fail হতো ("sdkmanager failed exit code 1")।
       # এখন শুধু আসল দরকারি প্যাকেজগুলো স্পষ্ট করে বলে দিলাম, 'tools' আর নেই।
+      - 
+          
       - name: Setup Android SDK Environment for Bubblewrap
         uses: android-actions/setup-android@v3
         with:
-          packages: 'platform-tools platforms;android-34 platforms;android-35 build-tools;34.0.0 build-tools;35.0.0'
+          packages: |
+            platform-tools
+            platforms;android-35
+            build-tools;35.0.0
+            
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Point Bubblewrap at JDK + Android SDK
+      
+      - name: Configure Bubblewrap SDK
+        shell: bash
         run: |
-          mkdir -p ~/.bubblewrap
-          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
-          cat ~/.bubblewrap/config.json
-
+          set -euxo pipefail
+          test -d "$ANDROID_HOME/platform-tools"
+          test -f "$ANDROID_HOME/platforms/android-35/android.jar"
+          test -x "$JAVA_HOME/bin/java"
+          mkdir -p "$HOME/.bubblewrap"
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}\n' "$JAVA_HOME" "$ANDROID_HOME" > "$HOME/.bubblewrap/config.json"
+          cat "$HOME/.bubblewrap/config.json"
+          bubblewrap doctor
+          
       - name: Restore or create signing key
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
