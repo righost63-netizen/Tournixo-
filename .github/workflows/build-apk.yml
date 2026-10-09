@@ -40,8 +40,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      # ⚠️ [FIX: "Failed to find package 'tools'"] এই অ্যাকশনের ডিফল্ট তালিকায়
+      # পুরনো 'tools' প্যাকেজটা থাকে, যেটা Google তাদের সার্ভার থেকে সরিয়ে
+      # দিয়েছে — তাই SDK ধাপ আগেই fail হতো ("sdkmanager failed exit code 1")।
+      # এখন শুধু আসল দরকারি প্যাকেজগুলো স্পষ্ট করে বলে দিলাম, 'tools' আর নেই।
       - name: Setup Android SDK Environment for Bubblewrap
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-34 platforms;android-35 build-tools;34.0.0 build-tools;35.0.0'
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
